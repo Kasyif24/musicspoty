@@ -1,701 +1,1079 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surprise For Silvia Tri Cahyani ❤️</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                fontFamily: { 'playfair': ['Playfair Display','serif'], 'quicksand': ['Quicksand','sans-serif'] },
-                colors: { 'pk50':'#FFF0F5','pk100':'#FCE4EC','pk200':'#F8BBD0','pk300':'#F48FB1','pk400':'#F06292','pk500':'#EC407A','pk600':'#E91E63','pk700':'#C2185B','crm':'#FFF8E7','crml':'#FFFDF5','gld':'#C9A96E','gldl':'#D4B896','gldd':'#A68B5B','txtp':'#4A2C3D','txts':'#8B6B7B','txtl':'#B899A8','bgsoft':'#FFF5F8' }
-            }
-        }
-    }
-    </script>
-    <style>
-        :root{--pink-50:#FFF0F5;--pink-200:#F8BBD0;--pink-300:#F48FB1;--pink-500:#EC407A;--pink-700:#C2185B;--cream:#FFF8E7;--cream-light:#FFFDF5;--gold:#C9A96E;--gold-light:#D4B896;--text-primary:#4A2C3D;--text-secondary:#8B6B7B}
-        *{margin:0;padding:0;box-sizing:border-box}
-        html{scroll-behavior:smooth}
-        body{font-family:'Quicksand',sans-serif;color:var(--text-primary);overflow-x:hidden;background:var(--cream-light)}
-        ::selection{background:var(--pink-200);color:var(--text-primary)}
-        ::-webkit-scrollbar{width:6px}
-        ::-webkit-scrollbar-track{background:var(--pink-50)}
-        ::-webkit-scrollbar-thumb{background:var(--pink-300);border-radius:3px}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>AR MUSIC SYSTEM // CYBERPUNK</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/howler@2/dist/howler.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<style>
+:root {
+  --neon-green: #00ff88;
+  --neon-blue: #00e5ff;
+  --neon-pink: #ff0066;
+  --bg-dark: #060610;
+  --glass-bg: rgba(6, 6, 16, 0.45);
+  --glass-border: rgba(0, 255, 136, 0.2);
+  --text-primary: #e8e8f0;
+  --text-dim: rgba(255,255,255,0.45);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg-dark);font-family:'Rajdhani',sans-serif;color:var(--text-primary);-webkit-tap-highlight-color:transparent}
+body{position:relative}
 
-        /* Loading Screen */
-        #loading{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#FFF0F5,#FCE4EC,#FFF8E7);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease,visibility .8s ease}
-        #loading.hidden{opacity:0;visibility:hidden}
-        .load-heart{font-size:4rem;animation:heartPulse 1s ease-in-out infinite}
-        @keyframes heartPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
-        .load-bar{width:200px;height:3px;background:var(--pink-200);border-radius:2px;overflow:hidden;margin-top:20px}
-        .load-bar-inner{height:100%;width:0;background:linear-gradient(90deg,var(--pink-300),var(--pink-500));border-radius:2px;transition:width .3s ease}
+/* === LOADING SCREEN === */
+#loading-screen{position:fixed;inset:0;z-index:9999;background:var(--bg-dark);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px}
+.loader-hex{width:80px;height:80px;position:relative}
+.loader-hex::before,.loader-hex::after{content:'';position:absolute;inset:0;border:2px solid var(--neon-green);border-radius:50%;animation:loaderSpin 2s linear infinite}
+.loader-hex::after{inset:10px;border-color:var(--neon-blue);animation-direction:reverse;animation-duration:1.5s}
+@keyframes loaderSpin{to{transform:rotate(360deg)}}
+.loader-title{font-family:'Orbitron',monospace;font-size:clamp(14px,3vw,22px);font-weight:700;letter-spacing:6px;color:var(--neon-green);text-shadow:0 0 20px rgba(0,255,136,0.4)}
+.loader-sub{font-size:14px;color:var(--text-dim);letter-spacing:2px}
+.loader-bar{width:200px;height:2px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden}
+.loader-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));border-radius:2px;transition:width 0.3s}
+.loader-status{font-family:'Orbitron',monospace;font-size:11px;color:var(--neon-blue);letter-spacing:1px;min-height:16px}
 
-        /* Cursor Glow */
-        #cursor-glow{position:fixed;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(244,143,177,.15) 0%,transparent 70%);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .15s ease,top .15s ease}
+/* === AR CONTAINER === */
+#ar-container{position:fixed;inset:0;display:none}
+#webcam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);filter:brightness(0.7) contrast(1.1) saturate(0.8)}
+#hand-canvas{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1);pointer-events:none;z-index:2}
 
-        /* Particles Canvas */
-        #particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+/* === OVERLAY EFEK === */
+.scan-line{position:fixed;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--neon-green),var(--neon-blue),var(--neon-green),transparent);opacity:0.15;z-index:3;pointer-events:none;animation:scanMove 4s linear infinite;box-shadow:0 0 20px var(--neon-green),0 0 60px var(--neon-green)}
+@keyframes scanMove{0%{top:-2px}100%{top:100%}}
+.vignette{position:fixed;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,0.65) 100%)}
+.grid-overlay{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0.03;background-image:linear-gradient(rgba(0,255,136,0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,0.3) 1px,transparent 1px);background-size:60px 60px}
 
-        /* Floating Hearts */
-        .floating-heart{position:fixed;z-index:1;pointer-events:none;font-size:1.2rem;opacity:0;animation:floatUp linear infinite}
-        @keyframes floatUp{0%{opacity:0;transform:translateY(100vh) rotate(0deg) scale(.5)}10%{opacity:.7}90%{opacity:.5}100%{opacity:0;transform:translateY(-10vh) rotate(45deg) scale(1)}}
+/* === HUD CORNER BRACKETS === */
+.hud-corner{position:fixed;z-index:10;pointer-events:none}
+.hud-corner::before,.hud-corner::after{content:'';position:absolute;background:var(--neon-green);box-shadow:0 0 8px var(--neon-green)}
+.hud-corner.tl{top:16px;left:16px}.hud-corner.tl::before{width:40px;height:2px;top:0;left:0}.hud-corner.tl::after{width:2px;height:40px;top:0;left:0}
+.hud-corner.tr{top:16px;right:16px}.hud-corner.tr::before{width:40px;height:2px;top:0;right:0}.hud-corner.tr::after{width:2px;height:40px;top:0;right:0}
+.hud-corner.bl{bottom:16px;left:16px}.hud-corner.bl::before{width:40px;height:2px;bottom:0;left:0}.hud-corner.bl::after{width:2px;height:40px;bottom:0;left:0}
+.hud-corner.br{bottom:16px;right:16px}.hud-corner.br::before{width:40px;height:2px;bottom:0;right:0}.hud-corner.br::after{width:2px;height:40px;bottom:0;right:0}
 
-        /* Sparkle */
-        .sparkle{position:fixed;z-index:1;pointer-events:none;width:6px;height:6px;background:var(--gold);border-radius:50%;animation:sparkleAnim 2s ease-in-out infinite}
-        @keyframes sparkleAnim{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+/* === HUD TOP/BOTTOM === */
+.hud-top{position:fixed;top:20px;left:70px;right:70px;display:flex;justify-content:space-between;align-items:center;z-index:10;pointer-events:none;font-family:'Orbitron',monospace}
+.hud-status{display:flex;align-items:center;gap:8px;font-size:clamp(9px,1.5vw,12px);letter-spacing:2px;color:var(--neon-green)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--neon-green);box-shadow:0 0 8px var(--neon-green);animation:dotPulse 2s ease infinite}
+@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hud-time{font-size:clamp(9px,1.5vw,12px);color:var(--neon-blue);letter-spacing:2px;text-shadow:0 0 10px rgba(0,229,255,0.3)}
+.hud-bottom{position:fixed;bottom:20px;left:70px;right:70px;display:flex;justify-content:space-between;align-items:center;z-index:10;pointer-events:none;font-family:'Orbitron',monospace;font-size:clamp(9px,1.3vw,11px);letter-spacing:1px}
+.hud-fps{color:var(--text-dim)}.hud-fps span:last-child{color:var(--neon-green)}
+.hud-tracking{display:flex;align-items:center;gap:6px;color:var(--text-dim);transition:color 0.3s}
+.hud-tracking.active{color:var(--neon-green)}
+.tracking-dot{width:5px;height:5px;border-radius:50%;background:var(--text-dim);transition:all 0.3s}
+.hud-tracking.active .tracking-dot{background:var(--neon-green);box-shadow:0 0 8px var(--neon-green)}
+.hud-gesture-log{color:var(--neon-blue);text-align:right;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:0.7}
 
-        /* Hero */
-        #hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;z-index:2}
-        .hero-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,5vw,3rem);font-weight:600;color:var(--text-primary);margin-bottom:1.5rem;opacity:0;animation:fadeUp 1s ease forwards .3s}
-        .typing-container{min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem}
-        .typing-line{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,3vw,1.6rem);color:var(--text-secondary);min-height:1.8em}
-        .typing-cursor{display:inline-block;width:2px;height:1.2em;background:var(--pink-500);margin-left:2px;animation:blink .7s step-end infinite;vertical-align:text-bottom}
-        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-        .hero-btn{margin-top:2.5rem;padding:16px 40px;background:linear-gradient(135deg,var(--pink-500),var(--pink-700));color:#fff;border:none;border-radius:50px;font-family:'Quicksand',sans-serif;font-size:1.1rem;font-weight:600;cursor:pointer;opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease,box-shadow .3s ease;box-shadow:0 4px 20px rgba(236,64,122,.3)}
-        .hero-btn:hover{box-shadow:0 8px 30px rgba(236,64,122,.5);transform:translateY(-2px)}
-        .hero-btn.show{opacity:1;transform:translateY(0)}
+/* === HUD SIDE TICKS === */
+.hud-side{position:fixed;top:50%;transform:translateY(-50%);z-index:10;pointer-events:none;display:flex;flex-direction:column;gap:4px}
+.hud-side.left{left:20px}.hud-side.right{right:20px}
+.side-tick{width:20px;height:1px;background:rgba(0,255,136,0.2)}
+.side-tick:nth-child(5n){width:30px;background:rgba(0,255,136,0.35)}
 
-        /* Confetti */
-        .confetti-piece{position:fixed;z-index:9997;pointer-events:none;animation:confettiFall linear forwards}
-        @keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotateZ(0deg)}100%{opacity:0;transform:translateY(100vh) rotateZ(720deg)}}
+/* === HUD RETICLE === */
+.hud-reticle{position:fixed;top:50%;left:50%;transform:translate(-50%,-55%);width:clamp(340px,50vw,480px);height:clamp(340px,50vw,480px);border:1px solid rgba(0,255,136,0.06);border-radius:50%;z-index:4;pointer-events:none;animation:reticleRotate 20s linear infinite}
+.hud-reticle::before{content:'';position:absolute;inset:-20px;border:1px dashed rgba(0,229,255,0.04);border-radius:50%;animation:reticleRotate 30s linear infinite reverse}
+@keyframes reticleRotate{to{transform:translate(-50%,-55%) rotate(360deg)}}
+/* Perbaikan: rotasi reticle tidak mengubah posisi */
+.hud-reticle{animation:none}
+.hud-reticle::before{animation:reticleSpin 30s linear infinite reverse}
+@keyframes reticleSpin{to{transform:rotate(360deg)}}
 
-        /* Gift Section */
-        #gift{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;position:relative;z-index:2}
-        .gift-wrapper{position:relative;width:220px;height:240px;margin-bottom:2rem}
-        .gift-body{position:absolute;bottom:0;left:20px;width:180px;height:140px;background:linear-gradient(135deg,var(--pink-500),var(--pink-700));border-radius:8px;box-shadow:0 8px 30px rgba(194,24,91,.3);overflow:hidden}
-        .gift-body::before{content:'';position:absolute;left:50%;transform:translateX(-50%);width:30px;height:100%;background:linear-gradient(90deg,var(--gold-light),var(--gold),var(--gold-light))}
-        .gift-body::after{content:'';position:absolute;top:50%;transform:translateY(-50%);width:100%;height:30px;background:linear-gradient(180deg,var(--gold-light),var(--gold),var(--gold-light))}
-        .gift-lid{position:absolute;top:0;left:10px;width:200px;height:40px;background:linear-gradient(135deg,var(--pink-300),var(--pink-500));border-radius:8px;box-shadow:0 4px 15px rgba(236,64,122,.2);transition:transform 1s cubic-bezier(.68,-.55,.27,1.55),opacity .8s ease;z-index:2}
-        .gift-lid::before{content:'';position:absolute;left:50%;transform:translateX(-50%);width:30px;height:100%;background:linear-gradient(90deg,var(--gold-light),var(--gold),var(--gold-light))}
-        .gift-bow{position:absolute;top:-20px;left:50%;transform:translateX(-50%);z-index:3;transition:transform 1s cubic-bezier(.68,-.55,.27,1.55),opacity .8s ease}
-        .gift-bow-left,.gift-bow-right{position:absolute;width:35px;height:25px;background:var(--gold);border-radius:50% 50% 0 50%;top:0}
-        .gift-bow-left{left:-30px;transform:rotate(-30deg)}
-        .gift-bow-right{right:-30px;transform:rotate(30deg) scaleX(-1)}
-        .gift-bow-center{width:16px;height:16px;background:var(--gold-dark);border-radius:50%;position:absolute;left:50%;top:8px;transform:translateX(-50%)}
-        .gift-wrapper.opened .gift-lid{transform:translateY(-100px) rotateZ(-20deg);opacity:0}
-        .gift-wrapper.opened .gift-bow{transform:translateX(-50%) translateY(-100px) rotateZ(-20deg);opacity:0}
-        .gift-wrapper.opened .gift-body{animation:giftBodyFade .8s ease .5s forwards}
-        @keyframes giftBodyFade{to{opacity:0;transform:scale(.8)}}
+/* === MUSIC PLAYER === */
+#music-player{position:fixed;top:50%;left:50%;transform:translate(-50%,-58%);z-index:20;display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;max-width:600px;padding:0 16px;pointer-events:none}
+#music-card{width:100%;max-width:380px;background:var(--glass-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;pointer-events:auto;box-shadow:0 0 40px rgba(0,255,136,0.06),inset 0 1px 0 rgba(255,255,255,0.05);animation:cardFloat 6s ease-in-out infinite;transition:border-color 0.5s,box-shadow 0.5s}
+#music-card.glow-active{border-color:rgba(0,255,136,0.45);box-shadow:0 0 60px rgba(0,255,136,0.15),0 0 120px rgba(0,255,136,0.05),inset 0 1px 0 rgba(255,255,255,0.08)}
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.card-cover{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden}
+.card-cover img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s}
+#music-card:hover .card-cover img{transform:scale(1.05)}
+.cover-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,16,0.95) 0%,rgba(6,6,16,0.3) 40%,transparent 70%);pointer-events:none}
+.cover-glow{position:absolute;bottom:-40px;left:50%;transform:translateX(-50%);width:200px;height:80px;background:var(--neon-green);filter:blur(60px);opacity:0;transition:opacity 0.8s;border-radius:50%}
+#music-card.glow-active .cover-glow{opacity:0.25}
+.card-body{padding:0 20px 20px}
+.card-title{font-family:'Orbitron',monospace;font-size:clamp(14px,2.5vw,18px);font-weight:700;letter-spacing:1px;color:#fff;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-artist{font-size:14px;color:var(--neon-blue);letter-spacing:1px;margin-bottom:14px;font-weight:500}
 
-        .photo-reveal{position:relative;opacity:0;transform:scale(.5);transition:opacity 1s ease 1.2s,transform 1s cubic-bezier(.68,-.55,.27,1.55) 1.2s;pointer-events:none}
-        .photo-reveal.show{opacity:1;transform:scale(1);pointer-events:auto}
-        .photo-frame{padding:12px;background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-light),var(--gold-light),var(--gold));border-radius:12px;box-shadow:0 15px 40px rgba(201,169,110,.3),0 0 0 4px var(--cream-light),0 0 0 8px rgba(201,169,110,.2)}
-        .photo-frame img{display:block;width:280px;height:280px;object-fit:cover;border-radius:6px}
-        .gift-text{text-align:center;opacity:0;transform:translateY(20px);transition:opacity .8s ease 2s,transform .8s ease 2s}
-        .gift-text.show{opacity:1;transform:translateY(0)}
+/* Progress Bar */
+.progress-container{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.progress-time{font-family:'Orbitron',monospace;font-size:10px;color:var(--text-dim);min-width:32px;letter-spacing:1px}
+.progress-time.right{text-align:right}
+.progress-track{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:4px;position:relative;cursor:pointer;overflow:visible}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));border-radius:4px;width:0%;position:relative;transition:width 0.1s linear}
+.progress-dot{position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--neon-green);box-shadow:0 0 10px var(--neon-green),0 0 20px rgba(0,255,136,0.3);opacity:0;transition:opacity 0.3s}
+.progress-track:hover .progress-dot{opacity:1}
 
-        /* Reveal on Scroll */
-        .reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
-        .reveal.revealed{opacity:1;transform:translateY(0)}
-        .reveal-delay-1{transition-delay:.15s}
-        .reveal-delay-2{transition-delay:.3s}
-        .reveal-delay-3{transition-delay:.45s}
-        .reveal-delay-4{transition-delay:.6s}
+/* Visualizer */
+.visualizer{display:flex;align-items:flex-end;justify-content:center;gap:2px;height:32px;margin-bottom:14px}
+.vis-bar{width:3px;border-radius:2px;background:var(--neon-green);transition:height 0.15s ease;box-shadow:0 0 4px rgba(0,255,136,0.3)}
+.visualizer.paused .vis-bar{height:3px!important;opacity:0.25}
 
-        /* Timeline */
-        .timeline{position:relative;max-width:800px;margin:0 auto}
-        .timeline::before{content:'';position:absolute;left:50%;transform:translateX(-50%);width:2px;height:100%;background:linear-gradient(to bottom,var(--pink-200),var(--gold),var(--pink-200))}
-        .timeline-item{position:relative;width:50%;padding:20px 40px}
-        .timeline-item:nth-child(odd){left:0;text-align:right}
-        .timeline-item:nth-child(even){left:50%;text-align:left}
-        .timeline-dot{position:absolute;top:28px;width:16px;height:16px;background:var(--pink-500);border:3px solid var(--cream-light);border-radius:50%;z-index:2;box-shadow:0 0 0 4px var(--pink-200)}
-        .timeline-item:nth-child(odd) .timeline-dot{right:-8px}
-        .timeline-item:nth-child(even) .timeline-dot{left:-8px}
-        .timeline-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 20px rgba(244,143,177,.1);border:1px solid var(--pink-200);transition:transform .3s ease,box-shadow .3s ease}
-        .timeline-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(244,143,177,.2)}
-        @media(max-width:768px){
-            .timeline::before{left:20px}
-            .timeline-item{width:100%;left:0!important;text-align:left!important;padding-left:50px;padding-right:16px}
-            .timeline-dot{left:12px!important;right:auto!important}
-        }
+/* Controls */
+.card-controls{display:flex;align-items:center;justify-content:center;gap:20px}
+.ctrl-btn{background:none;border:1px solid rgba(255,255,255,0.12);color:var(--text-primary);width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.25s}
+.ctrl-btn:hover{border-color:var(--neon-green);color:var(--neon-green);box-shadow:0 0 15px rgba(0,255,136,0.2)}
+.ctrl-btn:active{transform:scale(0.9)}
+.play-btn{width:50px;height:50px;font-size:16px;border-color:var(--neon-green);color:var(--neon-green);box-shadow:0 0 20px rgba(0,255,136,0.15)}
+.play-btn:hover{background:rgba(0,255,136,0.1);box-shadow:0 0 30px rgba(0,255,136,0.3)}
 
-        /* Gallery */
-        .gallery-grid{columns:3;column-gap:16px}
-        .gallery-item{break-inside:avoid;margin-bottom:16px;border-radius:12px;overflow:hidden;cursor:pointer;position:relative}
-        .gallery-item img{width:100%;display:block;transition:transform .5s ease}
-        .gallery-item:hover img{transform:scale(1.08)}
-        .gallery-item::after{content:'👁️';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(236,64,122,.2);opacity:0;transition:opacity .3s ease;font-size:2rem}
-        .gallery-item:hover::after{opacity:1}
-        @media(max-width:768px){.gallery-grid{columns:2}}
-        @media(max-width:480px){.gallery-grid{columns:1}}
+/* === CAROUSEL === */
+#carousel-container{width:100%;max-width:700px;height:100px;position:relative;overflow:visible;pointer-events:auto}
+.carousel-card{position:absolute;top:0;left:50%;width:80px;height:80px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);cursor:pointer;transition:filter 0.4s;will-change:transform,opacity}
+.carousel-card img{width:100%;height:100%;object-fit:cover}
+.carousel-card.active{border-color:var(--neon-green);box-shadow:0 0 20px rgba(0,255,136,0.3)}
+.carousel-card .card-label{position:absolute;bottom:0;left:0;right:0;padding:3px 5px;background:linear-gradient(transparent,rgba(0,0,0,0.85));font-size:8px;font-family:'Orbitron',monospace;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-dim);transition:color 0.3s}
+.carousel-card.active .card-label{color:var(--neon-green)}
 
-        /* Lightbox */
-        #lightbox{position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:2rem;cursor:pointer}
-        #lightbox.active{display:flex}
-        #lightbox img{max-width:90vw;max-height:85vh;border-radius:12px;box-shadow:0 0 60px rgba(244,143,177,.3)}
-        .lightbox-close{position:absolute;top:20px;right:20px;color:#fff;font-size:2rem;cursor:pointer;z-index:9991;transition:transform .3s ease}
-        .lightbox-close:hover{transform:rotate(90deg)}
+/* === GESTURE INDICATOR === */
+#gesture-indicator{position:fixed;top:18%;left:50%;transform:translateX(-50%);z-index:30;pointer-events:none;text-align:center;opacity:0}
+.gesture-icon{font-size:36px;margin-bottom:4px;filter:drop-shadow(0 0 15px var(--neon-green))}
+.gesture-text{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:3px;color:var(--neon-green);text-shadow:0 0 15px rgba(0,255,136,0.5)}
 
-        /* Letter */
-        .letter-paper{background:var(--cream-light);background-image:linear-gradient(rgba(201,169,110,.08) 1px,transparent 1px);background-size:100% 32px;border:1px solid rgba(201,169,110,.25);box-shadow:0 8px 40px rgba(0,0,0,.06),inset 0 0 80px rgba(201,169,110,.03);padding:48px 40px;position:relative;border-radius:4px}
-        .letter-paper::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--pink-200),var(--gold),var(--pink-200))}
-        @media(max-width:640px){.letter-paper{padding:32px 20px}}
+/* === HAND PROMPT === */
+#hand-prompt{position:fixed;bottom:130px;left:50%;transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:10px;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim);opacity:0;pointer-events:none}
+#hand-prompt i{font-size:20px;animation:handWave 2s ease-in-out infinite}
+@keyframes handWave{0%,100%{transform:rotate(0deg)}25%{transform:rotate(15deg)}75%{transform:rotate(-15deg)}}
 
-        /* Special Cards */
-        .special-card{background:#fff;border-radius:16px;padding:28px;text-align:center;border:1px solid var(--pink-200);box-shadow:0 4px 20px rgba(244,143,177,.08);transition:transform .4s cubic-bezier(.68,-.55,.27,1.55),box-shadow .3s ease}
-        .special-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 12px 40px rgba(244,143,177,.2)}
-        .special-icon{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.5rem}
+/* === INSTRUCTIONS === */
+.instruct-btn{position:fixed;bottom:20px;right:70px;z-index:25;pointer-events:auto!important;width:32px!important;height:32px!important;font-size:12px!important}
+#instructions{position:fixed;bottom:60px;right:20px;z-index:25;background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:12px;padding:16px 20px;min-width:240px;pointer-events:auto;font-size:13px}
+#instructions h3{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--neon-green);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(0,255,136,0.1)}
+.instr-item{display:flex;align-items:center;gap:10px;padding:5px 0;color:var(--text-dim)}
+.instr-item i{color:var(--neon-blue);width:18px;text-align:center;font-size:14px}
 
-        /* Countdown */
-        .countdown-box{background:#fff;border-radius:16px;padding:24px 16px;text-align:center;border:2px solid var(--pink-200);box-shadow:0 4px 20px rgba(244,143,177,.1);min-width:90px}
-        .countdown-num{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--pink-500);line-height:1}
-        .countdown-label{font-size:.8rem;color:var(--text-secondary);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+/* === GESTURE FLASH === */
+.gesture-flash{position:fixed;inset:0;z-index:5;pointer-events:none;opacity:0}
+.gesture-flash.left{background:linear-gradient(to right,rgba(0,229,255,0.15),transparent 40%)}
+.gesture-flash.right{background:linear-gradient(to left,rgba(0,229,255,0.15),transparent 40%)}
+.gesture-flash.up{background:linear-gradient(to top,rgba(0,255,136,0.12),transparent 40%)}
+.gesture-flash.down{background:linear-gradient(to bottom,rgba(255,0,102,0.1),transparent 40%)}
 
-        /* Ending */
-        #ending{position:relative;overflow:hidden;background:linear-gradient(135deg,#1a0a12,#2d1020,#1a0a12)}
-        .ending-star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;animation:twinkle 3s ease-in-out infinite}
-        @keyframes twinkle{0%,100%{opacity:.2;transform:scale(.5)}50%{opacity:1;transform:scale(1.2)}}
-        .ending-btn{padding:16px 40px;background:linear-gradient(135deg,var(--pink-500),var(--pink-700));color:#fff;border:2px solid var(--gold-light);border-radius:50px;font-family:'Quicksand',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s ease}
-        .ending-btn:hover{box-shadow:0 0 30px rgba(236,64,122,.5);transform:scale(1.05);border-color:var(--gold)}
+/* === ERROR FALLBACK === */
+#fallback-bg{position:fixed;inset:0;z-index:0;display:none;background:var(--bg-dark)}
+#fallback-bg .fb-grid{position:absolute;inset:0;opacity:0.04;background-image:linear-gradient(var(--neon-green) 1px,transparent 1px),linear-gradient(90deg,var(--neon-green) 1px,transparent 1px);background-size:80px 80px}
 
-        /* Music Player */
-        #music-player{position:fixed;bottom:20px;right:20px;z-index:9995;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:16px;padding:14px 18px;box-shadow:0 8px 30px rgba(0,0,0,.1);border:1px solid var(--pink-200);display:flex;align-items:center;gap:12px;transition:transform .3s ease,opacity .3s ease;max-width:260px}
-        #music-player:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(244,143,177,.2)}
-        .music-btn{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--pink-500),var(--pink-700));color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;transition:transform .2s ease}
-        .music-btn:hover{transform:scale(1.1)}
-        .volume-slider{-webkit-appearance:none;width:80px;height:4px;border-radius:2px;background:var(--pink-200);outline:none;cursor:pointer}
-        .volume-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--pink-500);cursor:pointer}
-
-        /* Fade Up */
-        @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-
-        /* Reduced Motion */
-        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.floating-heart,.sparkle,.ending-star{display:none}}
-    </style>
+/* === RESPONSIF === */
+@media(max-width:640px){
+  #music-card{max-width:300px}
+  .card-cover{aspect-ratio:1/1}
+  .card-title{font-size:13px}
+  .card-artist{font-size:12px}
+  .carousel-card{width:60px;height:60px}
+  #carousel-container{max-width:400px;height:75px}
+  .hud-top{left:50px;right:50px}
+  .hud-bottom{left:50px;right:50px;flex-wrap:wrap;gap:4px}
+  .hud-side{display:none}
+  .hud-corner.tl,.hud-corner.bl{left:10px}.hud-corner.tr,.hud-corner.br{right:10px}
+  .hud-corner.tl,.hud-corner.tr{top:10px}.hud-corner.bl,.hud-corner.br{bottom:10px}
+  .instruct-btn{right:50px}
+  #instructions{right:10px;min-width:200px;font-size:12px}
+  #hand-prompt{bottom:110px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+}
+</style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading">
-        <div class="load-heart">💝</div>
-        <p class="font-quicksand text-txtp mt-4 text-sm tracking-widest uppercase">Memuat Kejutan...</p>
-        <div class="load-bar"><div class="load-bar-inner" id="load-bar-inner"></div></div>
+
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loader-hex"></div>
+  <div class="loader-title">AR MUSIC SYSTEM</div>
+  <div class="loader-sub">CYBERPUNK EDITION v3.1</div>
+  <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
+  <div class="loader-status" id="loader-status">Memuat modul...</div>
+</div>
+
+<!-- Fallback Background (jika kamera tidak tersedia) -->
+<div id="fallback-bg"><div class="fb-grid"></div></div>
+
+<!-- AR Container -->
+<div id="ar-container">
+  <video id="webcam" autoplay playsinline muted></video>
+  <canvas id="hand-canvas"></canvas>
+  <div class="scan-line"></div>
+  <div class="vignette"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- HUD Corners -->
+  <div class="hud-corner tl"></div>
+  <div class="hud-corner tr"></div>
+  <div class="hud-corner bl"></div>
+  <div class="hud-corner br"></div>
+
+  <!-- HUD Top -->
+  <div class="hud-top">
+    <div class="hud-status"><span class="status-dot"></span>AR MUSIC SYSTEM</div>
+    <div class="hud-time" id="hud-time"></div>
+  </div>
+
+  <!-- HUD Bottom -->
+  <div class="hud-bottom">
+    <div class="hud-fps"><span>FPS </span><span id="fps-counter">--</span></div>
+    <div class="hud-tracking" id="hud-tracking"><span class="tracking-dot"></span><span id="tracking-text">NO HAND</span></div>
+    <div class="hud-gesture-log" id="gesture-log"></div>
+  </div>
+
+  <!-- HUD Side Ticks -->
+  <div class="hud-side left" id="side-left"></div>
+  <div class="hud-side right" id="side-right"></div>
+
+  <!-- HUD Reticle -->
+  <div class="hud-reticle"></div>
+
+  <!-- Gesture Flash -->
+  <div class="gesture-flash left" id="flash-left"></div>
+  <div class="gesture-flash right" id="flash-right"></div>
+  <div class="gesture-flash up" id="flash-up"></div>
+  <div class="gesture-flash down" id="flash-down"></div>
+
+  <!-- Music Player -->
+  <div id="music-player">
+    <div id="music-card">
+      <div class="card-cover">
+        <img id="card-cover-img" src="" alt="Album Cover">
+        <div class="cover-overlay"></div>
+        <div class="cover-glow"></div>
+      </div>
+      <div class="card-body">
+        <h2 class="card-title" id="card-title">--</h2>
+        <p class="card-artist" id="card-artist">--</p>
+        <div class="progress-container">
+          <span class="progress-time" id="time-current">0:00</span>
+          <div class="progress-track" id="progress-track">
+            <div class="progress-fill" id="progress-fill"><div class="progress-dot"></div></div>
+          </div>
+          <span class="progress-time right" id="time-total">0:00</span>
+        </div>
+        <div class="visualizer paused" id="visualizer"></div>
+        <div class="card-controls">
+          <button class="ctrl-btn" id="btn-prev" aria-label="Lagu sebelumnya"><i class="fas fa-backward-step"></i></button>
+          <button class="ctrl-btn play-btn" id="btn-play" aria-label="Play/Pause"><i class="fas fa-play" id="play-icon"></i></button>
+          <button class="ctrl-btn" id="btn-next" aria-label="Lagu berikutnya"><i class="fas fa-forward-step"></i></button>
+        </div>
+      </div>
     </div>
 
-    <!-- Cursor Glow -->
-    <div id="cursor-glow"></div>
-
-    <!-- Particles -->
-    <canvas id="particles"></canvas>
-
-    <!-- Floating Hearts Container -->
-    <div id="hearts-container"></div>
-
-    <!-- Sparkle Container -->
-    <div id="sparkle-container"></div>
-
-    <!-- Hero Section -->
-    <section id="hero">
-        <h1 class="hero-title">A Special Surprise For Someone Special ❤️</h1>
-        <div class="typing-container">
-            <div class="typing-line" id="typing-1"></div>
-            <div class="typing-line" id="typing-2"></div>
-        </div>
-        <button class="hero-btn" id="open-btn" onclick="openGift()">Buka Kejutan 🎁</button>
-    </section>
-
-    <!-- Gift Section -->
-    <section id="gift" class="bg-gradient-to-b from-pk50 to-crml">
-        <div class="gift-wrapper" id="gift-box">
-            <div class="gift-bow">
-                <div class="gift-bow-left"></div>
-                <div class="gift-bow-right"></div>
-                <div class="gift-bow-center"></div>
-            </div>
-            <div class="gift-lid"></div>
-            <div class="gift-body"></div>
-        </div>
-        <div class="photo-reveal" id="photo-reveal">
-            <div class="photo-frame">
-                <img src="https://picsum.photos/seed/silvia-special-love/600/600.jpg" alt="Silvia Tri Cahyani" loading="lazy">
-            </div>
-        </div>
-        <div class="gift-text mt-8 px-4" id="gift-text">
-            <h2 class="font-playfair text-2xl md:text-3xl font-semibold text-txtp mb-4">Hai Silvia Tri Cahyani ❤️</h2>
-            <p class="font-quicksand text-txts max-w-lg mx-auto leading-relaxed">Mungkin website sederhana ini tidak seindah dirimu, tetapi setiap baris yang ada di sini dibuat dengan penuh ketulusan.</p>
-        </div>
-    </section>
-
-    <!-- Timeline Section -->
-    <section id="timeline" class="py-24 px-4 bg-white">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="font-playfair text-3xl md:text-4xl font-semibold text-center text-txtp mb-4 reveal">Perjalanan Cerita Kita ✨</h2>
-            <p class="text-center text-txts mb-16 reveal reveal-delay-1">Setiap momen memiliki makna yang mendalam</p>
-            <div class="timeline">
-                <div class="timeline-item reveal">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <div class="text-pk500 font-bold text-sm mb-2">🕐 Awal Semua</div>
-                        <h3 class="font-playfair text-lg font-semibold mb-2">Pertama Kali Bertemu</h3>
-                        <p class="text-txts text-sm leading-relaxed">Pertemuan yang tak terduga, namun meninggalkan kesan yang tak terlupakan. Senyummu saat itu menjadi awal dari segalanya.</p>
-                    </div>
-                </div>
-                <div class="timeline-item reveal">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <div class="text-pk500 font-bold text-sm mb-2">💬 Memulai Dialog</div>
-                        <h3 class="font-playfair text-lg font-semibold mb-2">Pertama Kali Mengobrol</h3>
-                        <p class="text-txts text-sm leading-relaxed">Dari kata pertama hingga cerita panjang, obrolan kita mengalir begitu alami. Seolah kita sudah saling mengenal sejak lama.</p>
-                    </div>
-                </div>
-                <div class="timeline-item reveal">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <div class="text-pk500 font-bold text-sm mb-2">💫 Momen Berharga</div>
-                        <h3 class="font-playfair text-lg font-semibold mb-2">Momen Paling Berkesan</h3>
-                        <p class="text-txts text-sm leading-relaxed">Ada momen-momen yang ingin diulang berkali-kali. Tawa, cerita, dan kebersamaan yang membuat hari terasa istimewa.</p>
-                    </div>
-                </div>
-                <div class="timeline-item reveal">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card">
-                        <div class="text-pk500 font-bold text-sm mb-2">🌟 Ke Depan</div>
-                        <h3 class="font-playfair text-lg font-semibold mb-2">Harapan di Masa Depan</h3>
-                        <p class="text-txts text-sm leading-relaxed">Semoga cerita kita tidak berhenti di sini. Masih banyak hal indah yang menunggu untuk kita jalani bersama.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Gallery Section -->
-    <section id="gallery" class="py-24 px-4 bg-pk50">
-        <div class="max-w-5xl mx-auto">
-            <h2 class="font-playfair text-3xl md:text-4xl font-semibold text-center text-txtp mb-4 reveal">Potongan Cerita Kita 📸</h2>
-            <p class="text-center text-txts mb-12 reveal reveal-delay-1">Setiap foto menyimpan ribuan kata</p>
-            <div class="gallery-grid reveal reveal-delay-2">
-                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m1/400/500.jpg" alt="Momen 1" loading="lazy"></div>
-                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m2/400/300.jpg" alt="Momen 2" loading="lazy"></div>
-                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m3/400/420.jpg" alt="Momen 3" loading="lazy"></div>
-                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m4/400/350.jpg" alt="Momen 4" loading="lazy"></div>
-                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m5/400/480.jpg" alt="Momen 5" loading="lazy"></div>
-                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m6/400/320.jpg" alt="Momen 6" loading="lazy"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Lightbox -->
-    <div id="lightbox" onclick="closeLightbox()">
-        <span class="lightbox-close"><i class="fas fa-times"></i></span>
-        <img id="lightbox-img" src="" alt="Preview">
+    <div id="carousel-container">
+      <div id="carousel-track"></div>
     </div>
+  </div>
 
-    <!-- Letter Section -->
-    <section id="letter" class="py-24 px-4 bg-crml">
-        <div class="max-w-2xl mx-auto">
-            <h2 class="font-playfair text-3xl md:text-4xl font-semibold text-center text-txtp mb-12 reveal">Surat Untukmu 💌</h2>
-            <div class="letter-paper reveal reveal-delay-1">
-                <p class="font-playfair text-xl text-txtp mb-6 italic">Silvia,</p>
-                <p class="font-quicksand text-txts leading-loose mb-5">Terima kasih untuk semua tawa, cerita, perhatian, dan kebahagiaan yang pernah kamu hadirkan.</p>
-                <p class="font-quicksand text-txts leading-loose mb-5">Tidak semua hal bisa diungkapkan dengan kata-kata, tetapi semoga website sederhana ini bisa menjadi pengingat bahwa ada seseorang yang selalu mendoakan hal-hal terbaik untukmu.</p>
-                <p class="font-quicksand text-txts leading-loose mb-8">Semoga langkahmu selalu dimudahkan, impianmu tercapai, dan senyummu selalu terjaga.</p>
-                <p class="font-playfair text-3xl text-pk500 text-right">❤️</p>
-            </div>
-        </div>
-    </section>
+  <!-- Gesture Indicator -->
+  <div id="gesture-indicator">
+    <div class="gesture-icon" id="gesture-icon"></div>
+    <div class="gesture-text" id="gesture-text"></div>
+  </div>
 
-    <!-- Special Section -->
-    <section id="special" class="py-24 px-4 bg-white">
-        <div class="max-w-5xl mx-auto">
-            <h2 class="font-playfair text-3xl md:text-4xl font-semibold text-center text-txtp mb-4 reveal">Alasan Kamu Spesial 💫</h2>
-            <p class="text-center text-txts mb-12 reveal reveal-delay-1">Karena kamu lebih dari sekadar kata-kata</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="special-card reveal">
-                    <div class="special-icon bg-pk50 text-pk500"><i class="fas fa-face-smile"></i></div>
-                    <h3 class="font-playfair text-lg font-semibold mb-2">Senyummu Menenangkan</h3>
-                    <p class="text-txts text-sm">Setiap kali kamu tersenyum, seolah dunia menjadi tempat yang lebih baik.</p>
-                </div>
-                <div class="special-card reveal reveal-delay-1">
-                    <div class="special-icon" style="background:#FFF8E7;color:var(--gold)"><i class="fas fa-star"></i></div>
-                    <h3 class="font-playfair text-lg font-semibold mb-2">Kebaikanmu Menginspirasi</h3>
-                    <p class="text-txts text-sm">Caramu berbuat baik tanpa pamrih adalah pelajaran berharga bagi siapa saja.</p>
-                </div>
-                <div class="special-card reveal reveal-delay-2">
-                    <div class="special-icon bg-pk50 text-pk500"><i class="fas fa-palette"></i></div>
-                    <h3 class="font-playfair text-lg font-semibold mb-2">Kehadiranmu Membawa Warna</h3>
-                    <p class="text-txts text-sm">Hari-hariku menjadi lebih berwarna sejak kamu hadir di dalamnya.</p>
-                </div>
-                <div class="special-card reveal reveal-delay-1">
-                    <div class="special-icon" style="background:#FFF8E7;color:var(--gold)"><i class="fas fa-heart"></i></div>
-                    <h3 class="font-playfair text-lg font-semibold mb-2">Ketulusan yang Nyata</h3>
-                    <p class="text-txts text-sm">Caramu memperlakukan orang lain begitu tulus, itu yang membuatmu berbeda.</p>
-                </div>
-                <div class="special-card reveal reveal-delay-2 sm:col-span-2 lg:col-span-2">
-                    <div class="special-icon bg-gradient-to-br from-pk200 to-pk300 text-white"><i class="fas fa-crown"></i></div>
-                    <h3 class="font-playfair text-lg font-semibold mb-2">Kamu Adalah Sosok yang Istimewa</h3>
-                    <p class="text-txts text-sm">Tidak perlu menjadi sempurna untuk menjadi istimewa. Kamu sudah istimewa dengan cara kamu menjadi dirimu sendiri.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Hand Prompt -->
+  <div id="hand-prompt">
+    <i class="fas fa-hand"></i>
+    <span>TUNJUKKAN TANGAN ANDA</span>
+  </div>
 
-    <!-- Countdown Section -->
-    <section id="countdown" class="py-24 px-4 bg-gradient-to-b from-pk50 to-crml">
-        <div class="max-w-3xl mx-auto text-center">
-            <h2 class="font-playfair text-3xl md:text-4xl font-semibold text-txtp mb-4 reveal">Menuju Hari Spesialmu 🎂</h2>
-            <p class="text-txts mb-12 reveal reveal-delay-1" id="countdown-subtitle">Setiap detik mendekatkan kita pada momen yang ditunggu</p>
-            <div class="flex justify-center gap-4 md:gap-6 flex-wrap reveal reveal-delay-2">
-                <div class="countdown-box flex-1 min-w-[80px] max-w-[120px]">
-                    <div class="countdown-num" id="cd-days">00</div>
-                    <div class="countdown-label">Hari</div>
-                </div>
-                <div class="countdown-box flex-1 min-w-[80px] max-w-[120px]">
-                    <div class="countdown-num" id="cd-hours">00</div>
-                    <div class="countdown-label">Jam</div>
-                </div>
-                <div class="countdown-box flex-1 min-w-[80px] max-w-[120px]">
-                    <div class="countdown-num" id="cd-mins">00</div>
-                    <div class="countdown-label">Menit</div>
-                </div>
-                <div class="countdown-box flex-1 min-w-[80px] max-w-[120px]">
-                    <div class="countdown-num" id="cd-secs">00</div>
-                    <div class="countdown-label">Detik</div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Instructions Button -->
+  <button class="ctrl-btn instruct-btn" id="btn-instructions" aria-label="Panduan gestur"><i class="fas fa-question"></i></button>
 
-    <!-- Ending Section -->
-    <section id="ending" class="py-32 px-4 text-center text-white relative">
-        <div id="stars-container"></div>
-        <div class="relative z-10">
-            <h2 class="font-playfair text-3xl md:text-4xl font-semibold mb-6 reveal" style="animation:fadeUp 1s ease forwards">Terima kasih sudah membuka website ini ❤️</h2>
-            <p class="font-quicksand text-pk200 max-w-lg mx-auto leading-relaxed mb-10 reveal reveal-delay-1">Jika dunia memberi banyak alasan untuk menyerah, semoga kamu selalu menemukan alasan untuk tersenyum.</p>
-            <button class="ending-btn reveal reveal-delay-2" onclick="finalBurst()">I Will Always Support You 🌹</button>
-        </div>
-    </section>
+  <!-- Instructions Panel -->
+  <div id="instructions" style="display:none">
+    <h3>GESTURE CONTROL</h3>
+    <div class="instr-item"><i class="fas fa-hand-point-right"></i> Geser kanan &rarr; Lagu berikutnya</div>
+    <div class="instr-item"><i class="fas fa-hand-point-left"></i> Geser kiri &rarr; Lagu sebelumnya</div>
+    <div class="instr-item"><i class="fas fa-thumbs-up"></i> Jempol atas &rarr; Play</div>
+    <div class="instr-item"><i class="fas fa-thumbs-down"></i> Jempol bawah &rarr; Pause</div>
+  </div>
+</div>
 
-    <!-- Music Player -->
-    <div id="music-player">
-        <button class="music-btn" id="music-toggle" onclick="toggleMusic()" aria-label="Toggle music">
-            <i class="fas fa-play" id="music-icon"></i>
-        </button>
-        <div class="flex flex-col gap-1">
-            <span class="text-xs font-quicksand font-semibold text-txtp truncate" style="max-width:120px">Romantic Piano</span>
-            <input type="range" min="0" max="100" value="50" class="volume-slider" id="volume-slider" oninput="changeVolume(this.value)" aria-label="Volume">
-        </div>
-    </div>
+<script>
+/* ================================================================
+   DATA PLAYLIST - Menggunakan sample audio dari SoundHelix
+   ================================================================ */
+const playlist = [
+  { title:"Neon Genesis", artist:"Cyber Pulse", cover:"https://picsum.photos/seed/neon01/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+  { title:"Digital Rain", artist:"Synth Wave", cover:"https://picsum.photos/seed/digi02/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+  { title:"Hologram Dreams", artist:"Neon Drift", cover:"https://picsum.photos/seed/holo03/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+  { title:"Chrome Horizon", artist:"Voltage", cover:"https://picsum.photos/seed/chrm04/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
+  { title:"Midnight Protocol", artist:"Ghost Circuit", cover:"https://picsum.photos/seed/midn05/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
+  { title:"Quantum Flux", artist:"Data Stream", cover:"https://picsum.photos/seed/quant06/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
+  { title:"Electric Mirage", artist:"Pulse Code", cover:"https://picsum.photos/seed/elec07/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
+  { title:"Synthetica", artist:"Binary Star", cover:"https://picsum.photos/seed/synth08/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
+];
 
-    <!-- Footer -->
-    <footer class="py-8 px-4 text-center bg-gradient-to-b from-pk700 to-pk800 text-pk200">
-        <p class="font-quicksand text-sm">Made with ❤️ by Someone Who Cares About You &mdash; <span id="footer-year"></span></p>
-    </footer>
+/* ================================================================
+   STATE MANAGEMENT
+   ================================================================ */
+const state = {
+  currentIndex: 0,
+  isPlaying: false,
+  currentTime: 0,
+  duration: 0,
+  howl: null,
+  handDetected: false,
+  handHistory: [],       // Buffer posisi pergelangan tangan
+  thumbHoldCount: 0,     // Hitungan frame untuk gestur jempol
+  lastGesture: null,
+  lastGestureTime: 0,
+  fps: 0,
+  frameCount: 0,
+  lastFpsTime: performance.now(),
+  cameraReady: false,
+  mediapipeReady: false,
+  instructionsOpen: false,
+  noHandTimer: 0         // Timer untuk menampilkan prompt tangan
+};
 
-    <script>
-    /* ========================================
-       KONFIGURASI - Ganti tanggal di bawah ini
-       dengan tanggal ulang tahun Silvia
-    ======================================== */
-    const BIRTHDAY_DATE = new Date('2025-08-15T00:00:00');
+/* ================================================================
+   KONSTANTA
+   ================================================================ */
+const SWIPE_BUFFER_SIZE = 12;
+const SWIPE_THRESHOLD = 0.28;   // Total perpindahan x yang diperlukan
+const SWIPE_COOLDOWN = 1500;     // ms
+const THUMB_HOLD_REQUIRED = 8;   // Frame berturut-turut
+const THUMB_COOLDOWN = 2000;
+const NO_HAND_SHOW_DELAY = 3000; // ms sebelum prompt tangan muncul
 
-    /* ========================================
-       LOADING SCREEN
-    ======================================== */
-    (function initLoading(){
-        const bar = document.getElementById('load-bar-inner');
-        let progress = 0;
-        const interval = setInterval(()=>{
-            progress += Math.random() * 15 + 5;
-            if(progress >= 100){
-                progress = 100;
-                bar.style.width = '100%';
-                clearInterval(interval);
-                setTimeout(()=> document.getElementById('loading').classList.add('hidden'), 400);
-                setTimeout(()=> startTyping(), 800);
-            } else {
-                bar.style.width = progress + '%';
-            }
-        }, 250);
-    })();
+// Koneksi landmark tangan (MediaPipe)
+const HAND_CONNECTIONS = [
+  [0,1],[1,2],[2,3],[3,4],
+  [0,5],[5,6],[6,7],[7,8],
+  [5,9],[9,10],[10,11],[11,12],
+  [9,13],[13,14],[14,15],[15,16],
+  [13,17],[17,18],[18,19],[19,20],
+  [0,17]
+];
 
-    /* ========================================
-       CURSOR GLOW
-    ======================================== */
-    const cursorGlow = document.getElementById('cursor-glow');
-    let mouseX = 0, mouseY = 0;
-    document.addEventListener('mousemove', e => {
-        mouseX = e.clientX; mouseY = e.clientY;
-        cursorGlow.style.left = mouseX + 'px';
-        cursorGlow.style.top = mouseY + 'px';
+/* ================================================================
+   REFERENSI DOM
+   ================================================================ */
+const $ = id => document.getElementById(id);
+const dom = {
+  loadingScreen: $('loading-screen'),
+  loaderFill: $('loader-fill'),
+  loaderStatus: $('loader-status'),
+  arContainer: $('ar-container'),
+  fallbackBg: $('fallback-bg'),
+  webcam: $('webcam'),
+  canvas: $('hand-canvas'),
+  hudTime: $('hud-time'),
+  fpsCounter: $('fps-counter'),
+  hudTracking: $('hud-tracking'),
+  trackingText: $('tracking-text'),
+  gestureLog: $('gesture-log'),
+  musicCard: $('music-card'),
+  cardCoverImg: $('card-cover-img'),
+  cardTitle: $('card-title'),
+  cardArtist: $('card-artist'),
+  timeCurrent: $('time-current'),
+  timeTotal: $('time-total'),
+  progressFill: $('progress-fill'),
+  progressTrack: $('progress-track'),
+  visualizer: $('visualizer'),
+  btnPlay: $('btn-play'),
+  playIcon: $('play-icon'),
+  btnPrev: $('btn-prev'),
+  btnNext: $('btn-next'),
+  carouselTrack: $('carousel-track'),
+  gestureIndicator: $('gesture-indicator'),
+  gestureIcon: $('gesture-icon'),
+  gestureText: $('gesture-text'),
+  handPrompt: $('hand-prompt'),
+  btnInstructions: $('btn-instructions'),
+  instructions: $('instructions'),
+  flashLeft: $('flash-left'),
+  flashRight: $('flash-right'),
+  flashUp: $('flash-up'),
+  flashDown: $('flash-down')
+};
+const ctx = dom.canvas.getContext('2d');
+
+/* ================================================================
+   UTILITAS
+   ================================================================ */
+function formatTime(s) {
+  if (!isFinite(s) || s < 0) s = 0;
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+function updateLoader(pct, text) {
+  dom.loaderFill.style.width = pct + '%';
+  if (text) dom.loaderStatus.textContent = text;
+}
+
+/* ================================================================
+   INISIALISASI
+   ================================================================ */
+async function init() {
+  // Buat side ticks
+  ['side-left','side-right'].forEach(id => {
+    const el = $(id);
+    for (let i = 0; i < 25; i++) {
+      const tick = document.createElement('div');
+      tick.className = 'side-tick';
+      el.appendChild(tick);
+    }
+  });
+
+  // Buat visualizer bars
+  for (let i = 0; i < 28; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'vis-bar';
+    bar.style.height = '3px';
+    bar.style.opacity = '0.25';
+    bar.dataset.idx = i;
+    dom.visualizer.appendChild(bar);
+  }
+
+  // Render carousel
+  renderCarousel();
+
+  // Muat lagu pertama
+  loadSong(0, false);
+
+  // Mulai kamera
+  try {
+    updateLoader(10, 'Mengakses kamera...');
+    await setupCamera();
+    updateLoader(40, 'Kamera aktif. Memuat AI...');
+  } catch(e) {
+    console.warn('Kamera tidak tersedia:', e.message);
+    updateLoader(40, 'Kamera tidak tersedia - mode fallback');
+    dom.fallbackBg.style.display = 'block';
+  }
+
+  // Mulai MediaPipe
+  try {
+    updateLoader(50, 'Memuat model deteksi tangan...');
+    await setupMediaPipe();
+    updateLoader(90, 'Hampir siap...');
+  } catch(e) {
+    console.warn('MediaPipe gagal:', e.message);
+    updateLoader(90, 'Gesture control tidak tersedia');
+  }
+
+  // Selesai
+  updateLoader(100, 'SISTEM ONLINE');
+  await new Promise(r => setTimeout(r, 600));
+
+  gsap.to(dom.loadingScreen, {
+    opacity: 0,
+    duration: 0.6,
+    ease: 'power2.inOut',
+    onComplete: () => {
+      dom.loadingScreen.style.display = 'none';
+      dom.arContainer.style.display = 'block';
+      gsap.from('#music-card', { scale: 0.8, opacity: 0, duration: 0.8, ease: 'back.out(1.4)' });
+      gsap.from('.carousel-card', { y: 40, opacity: 0, duration: 0.6, stagger: 0.06, delay: 0.3, ease: 'power2.out' });
+      gsap.from('.hud-corner', { scale: 0, opacity: 0, duration: 0.4, stagger: 0.1, delay: 0.5, ease: 'back.out(2)' });
+    }
+  });
+
+  // Loop utama
+  requestAnimationFrame(mainLoop);
+  setInterval(updateHUDTime, 1000);
+  updateHUDTime();
+}
+
+/* ================================================================
+   KAMERA (WebRTC)
+   ================================================================ */
+function setupCamera() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      reject(new Error('WebRTC tidak didukung'));
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: false
+    }).then(stream => {
+      dom.webcam.srcObject = stream;
+      dom.webcam.onloadedmetadata = () => {
+        dom.canvas.width = dom.webcam.videoWidth;
+        dom.canvas.height = dom.webcam.videoHeight;
+        state.cameraReady = true;
+        resolve();
+      };
+    }).catch(reject);
+  });
+}
+
+/* ================================================================
+   MEDIAPIPE HANDS
+   ================================================================ */
+function setupMediaPipe() {
+  return new Promise((resolve, reject) => {
+    try {
+      const hands = new Hands({
+        locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+      });
+      hands.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.65,
+        minTrackingConfidence: 0.5
+      });
+      hands.onResults(onHandResults);
+
+      // Gunakan Camera utils untuk loop frame
+      if (state.cameraReady) {
+        const cam = new Camera(dom.webcam, {
+          onFrame: async () => { await hands.send({ image: dom.webcam }); },
+          width: 1280,
+          height: 720
+        });
+        cam.start().then(() => {
+          state.mediapipeReady = true;
+          resolve();
+        }).catch(reject);
+      } else {
+        resolve(); // Tidak bisa dijalankan tanpa kamera
+      }
+    } catch(e) {
+      reject(e);
+    }
+  });
+}
+
+/* ================================================================
+   HASIL DETEKSI TANGAN
+   ================================================================ */
+function onHandResults(results) {
+  // Bersihkan canvas
+  ctx.clearRect(0, 0, dom.canvas.width, dom.canvas.height);
+
+  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    const landmarks = results.multiHandLandmarks[0];
+    state.handDetected = true;
+    state.noHandTimer = 0;
+
+    // Gambar kerangka tangan dengan efek neon
+    drawHandSkeleton(landmarks);
+
+    // Update posisi pergelangan tangan ke buffer
+    const wrist = landmarks[0];
+    state.handHistory.push({ x: wrist.x, y: wrist.y, time: performance.now() });
+    if (state.handHistory.length > SWIPE_BUFFER_SIZE) {
+      state.handHistory.shift();
+    }
+
+    // Deteksi gestur
+    detectGestures(landmarks);
+  } else {
+    state.handDetected = false;
+    state.handHistory = [];
+    state.thumbHoldCount = 0;
+  }
+}
+
+/* ================================================================
+   GAMBAR KERANGKA TANGAN (NEON HOLOGRAM)
+   ================================================================ */
+function drawHandSkeleton(landmarks) {
+  const w = dom.canvas.width;
+  const h = dom.canvas.height;
+
+  // Gambar koneksi (garis)
+  ctx.save();
+  ctx.shadowColor = '#00e5ff';
+  ctx.shadowBlur = 12;
+  ctx.strokeStyle = '#00e5ff';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+
+  HAND_CONNECTIONS.forEach(([a, b]) => {
+    const la = landmarks[a];
+    const lb = landmarks[b];
+    ctx.beginPath();
+    ctx.moveTo(la.x * w, la.y * h);
+    ctx.lineTo(lb.x * w, lb.y * h);
+    ctx.stroke();
+  });
+
+  // Gambar landmark (titik)
+  ctx.shadowBlur = 16;
+  ctx.shadowColor = '#00e5ff';
+  landmarks.forEach((lm, i) => {
+    const x = lm.x * w;
+    const y = lm.y * h;
+    const r = [0, 4, 8, 12, 16, 20].includes(i) ? 5 : 3; // Titik ujung lebih besar
+
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(1, r), 0, Math.PI * 2);
+    ctx.fillStyle = [4].includes(i) ? '#00ff88' : '#00e5ff'; // Ibu jari hijau
+    ctx.fill();
+
+    // Ring luar untuk titik ujung jari
+    if ([4, 8, 12, 16, 20].includes(i)) {
+      ctx.beginPath();
+      ctx.arc(x, y, Math.max(1, r + 4), 0, Math.PI * 2);
+      ctx.strokeStyle = [4].includes(i) ? 'rgba(0,255,136,0.4)' : 'rgba(0,229,255,0.4)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  });
+
+  ctx.restore();
+}
+
+/* ================================================================
+   DETEKSI GESTUR
+   ================================================================ */
+function detectGestures(landmarks) {
+  const now = performance.now();
+
+  // --- Deteksi Swipe ---
+  if (state.handHistory.length >= SWIPE_BUFFER_SIZE) {
+    const oldest = state.handHistory[0];
+    const newest = state.handHistory[state.handHistory.length - 1];
+    const dx = newest.x - oldest.x; // Perpindahan x (koordinat asli, belum di-mirror)
+
+    // Karena video di-mirror: dx negatif = tangan bergerak ke kanan di layar = SWIPE RIGHT
+    if (Math.abs(dx) > SWIPE_THRESHOLD && (now - state.lastGestureTime) > SWIPE_COOLDOWN) {
+      const gesture = dx < 0 ? 'swipe_right' : 'swipe_left';
+      triggerGesture(gesture);
+      state.handHistory = []; // Reset buffer
+      return;
+    }
+  }
+
+  // --- Deteksi Jempol Atas/Bawah ---
+  const thumbTip = landmarks[4];
+  const thumbIP = landmarks[3];
+  const thumbMCP = landmarks[2];
+
+  // Periksa apakah 4 jari lain terlipat (tip di bawah PIP)
+  const fingerTips = [8, 12, 16, 20];
+  const fingerPIPs = [6, 10, 14, 18];
+  const allCurled = fingerTips.every((tipIdx, i) => {
+    return landmarks[tipIdx].y > landmarks[fingerPIPs[i]].y;
+  });
+
+  if (allCurled) {
+    // Jempol atas: ujung jempol lebih tinggi (y lebih kecil) dari MCP
+    if (thumbTip.y < thumbMCP.y - 0.06) {
+      state.thumbHoldCount++;
+      if (state.thumbHoldCount >= THUMB_HOLD_REQUIRED && (now - state.lastGestureTime) > THUMB_COOLDOWN) {
+        triggerGesture('thumbs_up');
+        state.thumbHoldCount = 0;
+        return;
+      }
+    }
+    // Jempol bawah: ujung jempol lebih rendah (y lebih besar) dari MCP
+    else if (thumbTip.y > thumbMCP.y + 0.06) {
+      state.thumbHoldCount++;
+      if (state.thumbHoldCount >= THUMB_HOLD_REQUIRED && (now - state.lastGestureTime) > THUMB_COOLDOWN) {
+        triggerGesture('thumbs_down');
+        state.thumbHoldCount = 0;
+        return;
+      }
+    } else {
+      state.thumbHoldCount = 0;
+    }
+  } else {
+    state.thumbHoldCount = 0;
+  }
+}
+
+function triggerGesture(gesture) {
+  state.lastGesture = gesture;
+  state.lastGestureTime = performance.now();
+  state.thumbHoldCount = 0;
+
+  // Log gestur
+  const labels = {
+    swipe_right: 'NEXT TRACK',
+    swipe_left: 'PREV TRACK',
+    thumbs_up: 'PLAY',
+    thumbs_down: 'PAUSE'
+  };
+  dom.gestureLog.textContent = labels[gesture] || gesture;
+
+  // Tampilkan indikator gestur
+  showGestureIndicator(gesture);
+
+  // Flash efek
+  flashGesture(gesture);
+
+  // Eksekusi aksi
+  switch(gesture) {
+    case 'swipe_right': nextSong(); break;
+    case 'swipe_left': prevSong(); break;
+    case 'thumbs_up': if (!state.isPlaying) playSong(); break;
+    case 'thumbs_down': if (state.isPlaying) pauseSong(); break;
+  }
+}
+
+/* ================================================================
+   INDIKATOR GESTUR VISUAL
+   ================================================================ */
+function showGestureIndicator(gesture) {
+  const icons = {
+    swipe_right: '<i class="fas fa-forward-step"></i>',
+    swipe_left: '<i class="fas fa-backward-step"></i>',
+    thumbs_up: '<i class="fas fa-thumbs-up"></i>',
+    thumbs_down: '<i class="fas fa-thumbs-down"></i>'
+  };
+  const texts = {
+    swipe_right: 'NEXT TRACK',
+    swipe_left: 'PREV TRACK',
+    thumbs_up: 'PLAY',
+    thumbs_down: 'PAUSE'
+  };
+
+  dom.gestureIcon.innerHTML = icons[gesture] || '';
+  dom.gestureText.textContent = texts[gesture] || '';
+
+  gsap.killTweensOf(dom.gestureIndicator);
+  gsap.fromTo(dom.gestureIndicator,
+    { opacity: 0, y: 20, scale: 0.8 },
+    { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: 'back.out(2)',
+      onComplete: () => {
+        gsap.to(dom.gestureIndicator, { opacity: 0, y: -20, duration: 0.5, delay: 0.6, ease: 'power2.in' });
+      }
+    }
+  );
+}
+
+function flashGesture(gesture) {
+  const map = { swipe_left: 'flash-left', swipe_right: 'flash-right', thumbs_up: 'flash-up', thumbs_down: 'flash-down' };
+  const el = dom[map[gesture]];
+  if (!el) return;
+  gsap.killTweensOf(el);
+  gsap.fromTo(el, { opacity: 1 }, { opacity: 0, duration: 0.6, ease: 'power2.out' });
+}
+
+/* ================================================================
+   MUSIC PLAYER - Howler.js
+   ================================================================ */
+function loadSong(index, autoPlay = false) {
+  // Hentikan lagu sebelumnya
+  if (state.howl) {
+    state.howl.unload();
+    state.howl = null;
+  }
+
+  state.currentIndex = index;
+  state.currentTime = 0;
+  state.duration = 0;
+  const song = playlist[index];
+
+  // Update UI
+  dom.cardCoverImg.src = song.cover;
+  dom.cardTitle.textContent = song.title;
+  dom.cardArtist.textContent = song.artist;
+  dom.timeCurrent.textContent = '0:00';
+  dom.timeTotal.textContent = '0:00';
+  dom.progressFill.style.width = '0%';
+
+  // Highlight carousel
+  updateCarousel();
+
+  // Buat Howl baru
+  state.howl = new Howl({
+    src: [song.src],
+    html5: true, // Gunakan HTML5 Audio untuk streaming
+    format: ['mp3'],
+    onload: function() {
+      state.duration = state.howl.duration();
+      dom.timeTotal.textContent = formatTime(state.duration);
+    },
+    onloaderror: function(id, err) {
+      console.warn('Gagal memuat audio:', err);
+      // Simulasi durasi jika audio gagal dimuat
+      state.duration = 240;
+      dom.timeTotal.textContent = formatTime(state.duration);
+    },
+    onplay: function() {
+      state.isPlaying = true;
+      dom.playIcon.className = 'fas fa-pause';
+      dom.visualizer.classList.remove('paused');
+      dom.musicCard.classList.add('glow-active');
+    },
+    onpause: function() {
+      state.isPlaying = false;
+      dom.playIcon.className = 'fas fa-play';
+      dom.visualizer.classList.add('paused');
+      dom.musicCard.classList.remove('glow-active');
+    },
+    onstop: function() {
+      state.isPlaying = false;
+      dom.playIcon.className = 'fas fa-play';
+      dom.visualizer.classList.add('paused');
+      dom.musicCard.classList.remove('glow-active');
+    },
+    onend: function() {
+      // Otomatis lanjut ke lagu berikutnya
+      nextSong();
+    }
+  });
+
+  if (autoPlay) {
+    state.howl.play();
+  }
+}
+
+function playSong() {
+  if (!state.howl) return;
+  if (state.isPlaying) return;
+  state.howl.play();
+}
+
+function pauseSong() {
+  if (!state.howl) return;
+  if (!state.isPlaying) return;
+  state.howl.pause();
+}
+
+function togglePlay() {
+  if (state.isPlaying) pauseSong();
+  else playSong();
+}
+
+function nextSong() {
+  const next = (state.currentIndex + 1) % playlist.length;
+  // Animasi transisi
+  gsap.to(dom.musicCard, {
+    scale: 0.95, opacity: 0.5, duration: 0.15,
+    onComplete: () => {
+      loadSong(next, state.isPlaying);
+      gsap.to(dom.musicCard, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.2)' });
+    }
+  });
+}
+
+function prevSong() {
+  // Jika sudah diputar > 3 detik, restart lagu. Jika tidak, ke lagu sebelumnya
+  if (state.currentTime > 3) {
+    if (state.howl) state.howl.seek(0);
+    state.currentTime = 0;
+    return;
+  }
+  const prev = (state.currentIndex - 1 + playlist.length) % playlist.length;
+  gsap.to(dom.musicCard, {
+    scale: 0.95, opacity: 0.5, duration: 0.15,
+    onComplete: () => {
+      loadSong(prev, state.isPlaying);
+      gsap.to(dom.musicCard, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.2)' });
+    }
+  });
+}
+
+function seekTo(ratio) {
+  if (!state.howl || !isFinite(state.duration) || state.duration <= 0) return;
+  const seekTime = ratio * state.duration;
+  state.howl.seek(seekTime);
+  state.currentTime = seekTime;
+}
+
+/* ================================================================
+   CAROUSEL
+   ================================================================ */
+function renderCarousel() {
+  dom.carouselTrack.innerHTML = '';
+  playlist.forEach((song, i) => {
+    const card = document.createElement('div');
+    card.className = 'carousel-card' + (i === state.currentIndex ? ' active' : '');
+    card.innerHTML = `<img src="${song.cover}" alt="${song.title}" loading="lazy"><div class="card-label">${song.title}</div>`;
+    card.addEventListener('click', () => {
+      if (i === state.currentIndex) return;
+      gsap.to(dom.musicCard, {
+        scale: 0.95, opacity: 0.5, duration: 0.15,
+        onComplete: () => {
+          loadSong(i, state.isPlaying);
+          gsap.to(dom.musicCard, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.2)' });
+        }
+      });
     });
-    /* Sembunyikan di mobile */
-    if('ontouchstart' in window) cursorGlow.style.display = 'none';
+    dom.carouselTrack.appendChild(card);
+  });
+  updateCarousel();
+}
 
-    /* ========================================
-       PARTICLE BACKGROUND
-    ======================================== */
-    (function initParticles(){
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        resize(); window.addEventListener('resize', resize);
+function updateCarousel() {
+  const cards = dom.carouselTrack.querySelectorAll('.carousel-card');
+  const isMobile = window.innerWidth < 640;
+  const spacing = isMobile ? 75 : 110;
 
-        for(let i = 0; i < 60; i++){
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: Math.random() * 2 + 0.5,
-                dx: (Math.random() - 0.5) * 0.3,
-                dy: (Math.random() - 0.5) * 0.3,
-                opacity: Math.random() * 0.4 + 0.1
-            });
-        }
-        function draw(){
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            particles.forEach(p => {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, Math.max(0.1, p.r), 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(244,143,177,${p.opacity})`;
-                ctx.fill();
-                p.x += p.dx; p.y += p.dy;
-                if(p.x < 0) p.x = canvas.width;
-                if(p.x > canvas.width) p.x = 0;
-                if(p.y < 0) p.y = canvas.height;
-                if(p.y > canvas.height) p.y = 0;
-            });
-            requestAnimationFrame(draw);
-        }
-        draw();
-    })();
+  cards.forEach((card, i) => {
+    const offset = i - state.currentIndex;
+    const absOffset = Math.abs(offset);
 
-    /* ========================================
-       FLOATING HEARTS
-    ======================================== */
-    (function initHearts(){
-        const container = document.getElementById('hearts-container');
-        const hearts = ['❤️','💕','💗','💖','🩷','🤍','✨'];
-        function createHeart(){
-            const h = document.createElement('div');
-            h.className = 'floating-heart';
-            h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-            h.style.left = Math.random() * 100 + 'vw';
-            h.style.fontSize = (Math.random() * 1 + 0.8) + 'rem';
-            h.style.animationDuration = (Math.random() * 8 + 8) + 's';
-            h.style.animationDelay = Math.random() * 2 + 's';
-            container.appendChild(h);
-            setTimeout(()=> h.remove(), 18000);
-        }
-        setInterval(createHeart, 1500);
-        /* Buat beberapa awal */
-        for(let i = 0; i < 5; i++) setTimeout(createHeart, i * 400);
-    })();
-
-    /* ========================================
-       SPARKLES
-    ======================================== */
-    (function initSparkles(){
-        const container = document.getElementById('sparkle-container');
-        function createSparkle(){
-            const s = document.createElement('div');
-            s.className = 'sparkle';
-            s.style.left = Math.random() * 100 + 'vw';
-            s.style.top = Math.random() * 100 + 'vh';
-            s.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            s.style.animationDelay = Math.random() * 2 + 's';
-            container.appendChild(s);
-            setTimeout(()=> s.remove(), 7000);
-        }
-        setInterval(createSparkle, 800);
-    })();
-
-    /* ========================================
-       TYPING ANIMATION
-    ======================================== */
-    function typeText(element, text, speed = 80){
-        return new Promise(resolve => {
-            let i = 0;
-            const cursor = document.createElement('span');
-            cursor.className = 'typing-cursor';
-            element.appendChild(cursor);
-            function type(){
-                if(i < text.length){
-                    element.insertBefore(document.createTextNode(text[i]), cursor);
-                    i++;
-                    setTimeout(type, speed);
-                } else {
-                    setTimeout(()=>{
-                        cursor.remove();
-                        resolve();
-                    }, 500);
-                }
-            }
-            type();
-        });
-    }
-    async function startTyping(){
-        await typeText(document.getElementById('typing-1'), 'Untuk Silvia Tri Cahyani', 90);
-        await new Promise(r => setTimeout(r, 400));
-        await typeText(document.getElementById('typing-2'), 'Terima kasih telah hadir dan menjadi bagian dari cerita yang begitu berarti.', 50);
-        document.getElementById('open-btn').classList.add('show');
+    if (absOffset > 3) {
+      card.style.opacity = '0';
+      card.style.pointerEvents = 'none';
+      return;
     }
 
-    /* ========================================
-       CONFETTI
-    ======================================== */
-    function burstConfetti(count = 80){
-        const colors = ['#EC407A','#F48FB1','#F8BBD0','#C9A96E','#D4B896','#fff','#E91E63','#FFD700'];
-        for(let i = 0; i < count; i++){
-            const piece = document.createElement('div');
-            piece.className = 'confetti-piece';
-            piece.style.left = (Math.random() * 100) + 'vw';
-            piece.style.top = '-10px';
-            piece.style.width = (Math.random() * 10 + 5) + 'px';
-            piece.style.height = (Math.random() * 10 + 5) + 'px';
-            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-            piece.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            piece.style.animationDelay = (Math.random() * 0.5) + 's';
-            document.body.appendChild(piece);
-            setTimeout(()=> piece.remove(), 6000);
-        }
+    card.style.pointerEvents = 'auto';
+    card.classList.toggle('active', i === state.currentIndex);
+
+    const x = offset * spacing;
+    const scale = 1 - absOffset * 0.22;
+    const opacity = 1 - absOffset * 0.3;
+    const blur = absOffset * 2;
+
+    gsap.to(card, {
+      x: x,
+      scale: Math.max(0.4, scale),
+      opacity: Math.max(0.1, opacity),
+      filter: `blur(${blur}px)`,
+      duration: 0.5,
+      ease: 'power2.out'
+    });
+  });
+}
+
+/* ================================================================
+   VISUALIZER ANIMASI
+   ================================================================ */
+function updateVisualizer() {
+  if (!state.isPlaying) return;
+  const bars = dom.visualizer.querySelectorAll('.vis-bar');
+  const time = performance.now() * 0.003;
+  bars.forEach((bar, i) => {
+    const h = 4 + Math.abs(Math.sin(time + i * 0.5)) * 22 + Math.random() * 6;
+    bar.style.height = h + 'px';
+    bar.style.opacity = (0.4 + (h / 32) * 0.6).toFixed(2);
+  });
+}
+
+/* ================================================================
+   PROGRESS BAR UPDATE
+   ================================================================ */
+function updateProgress() {
+  if (state.isPlaying && state.howl) {
+    state.currentTime = state.howl.seek() || 0;
+  }
+  if (state.duration > 0) {
+    const pct = (state.currentTime / state.duration) * 100;
+    dom.progressFill.style.width = pct + '%';
+    dom.timeCurrent.textContent = formatTime(state.currentTime);
+  }
+}
+
+/* ================================================================
+   HUD UPDATE
+   ================================================================ */
+function updateHUDTime() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const s = String(now.getSeconds()).padStart(2, '0');
+  dom.hudTime.textContent = `${h}:${m}:${s}`;
+}
+
+function updateFPS() {
+  state.frameCount++;
+  const now = performance.now();
+  if (now - state.lastFpsTime >= 1000) {
+    state.fps = state.frameCount;
+    state.frameCount = 0;
+    state.lastFpsTime = now;
+    dom.fpsCounter.textContent = state.fps;
+  }
+}
+
+function updateTrackingStatus() {
+  if (state.handDetected) {
+    dom.hudTracking.classList.add('active');
+    dom.trackingText.textContent = 'HAND LOCKED';
+    dom.handPrompt.style.opacity = '0';
+  } else {
+    dom.hudTracking.classList.remove('active');
+    dom.trackingText.textContent = 'NO HAND';
+    state.noHandTimer += 16;
+    if (state.noHandTimer > NO_HAND_SHOW_DELAY && state.mediapipeReady) {
+      dom.handPrompt.style.opacity = '1';
+    } else {
+      dom.handPrompt.style.opacity = '0';
     }
+  }
+}
 
-    /* ========================================
-       GIFT OPENING
-    ======================================== */
-    let giftOpened = false;
-    function openGift(){
-        if(giftOpened) return;
-        giftOpened = true;
-        burstConfetti(100);
-        document.getElementById('gift').scrollIntoView({ behavior: 'smooth' });
-        setTimeout(()=>{
-            document.getElementById('gift-box').classList.add('opened');
-            setTimeout(()=>{
-                document.getElementById('photo-reveal').classList.add('show');
-                document.getElementById('gift-text').classList.add('show');
-            }, 600);
-        }, 800);
-    }
+/* ================================================================
+   MAIN LOOP
+   ================================================================ */
+function mainLoop() {
+  updateFPS();
+  updateProgress();
+  updateVisualizer();
+  updateTrackingStatus();
+  requestAnimationFrame(mainLoop);
+}
 
-    /* ========================================
-       SCROLL REVEAL (Intersection Observer)
-    ======================================== */
-    const revealObserver = new IntersectionObserver((entries)=>{
-        entries.forEach(entry => {
-            if(entry.isIntersecting){
-                entry.target.classList.add('revealed');
-            }
-        });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+/* ================================================================
+   EVENT LISTENERS
+   ================================================================ */
+dom.btnPlay.addEventListener('click', togglePlay);
+dom.btnNext.addEventListener('click', nextSong);
+dom.btnPrev.addEventListener('click', prevSong);
 
-    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+dom.progressTrack.addEventListener('click', e => {
+  const rect = dom.progressTrack.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  seekTo(ratio);
+});
 
-    /* ========================================
-       LIGHTBOX
-    ======================================== */
-    function openLightbox(item){
-        const img = item.querySelector('img');
-        document.getElementById('lightbox-img').src = img.src;
-        document.getElementById('lightbox').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    function closeLightbox(){
-        document.getElementById('lightbox').classList.remove('active');
-        document.body.style.overflow = '';
-    }
-    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
+dom.btnInstructions.addEventListener('click', () => {
+  state.instructionsOpen = !state.instructionsOpen;
+  if (state.instructionsOpen) {
+    dom.instructions.style.display = 'block';
+    gsap.fromTo(dom.instructions, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 });
+  } else {
+    gsap.to(dom.instructions, {
+      opacity: 0, y: 10, duration: 0.2,
+      onComplete: () => { dom.instructions.style.display = 'none'; }
+    });
+  }
+});
 
-    /* ========================================
-       COUNTDOWN
-    ======================================== */
-    function updateCountdown(){
-        const now = new Date();
-        let target = new Date(BIRTHDAY_DATE);
-        /* Jika tanggal sudah lewat tahun ini, gunakan tahun depan */
-        if(now > target){
-            target = new Date(BIRTHDAY_DATE);
-            target.setFullYear(now.getFullYear());
-            if(now > target) target.setFullYear(now.getFullYear() + 1);
-        }
-        const diff = target - now;
-        if(diff <= 0){
-            document.getElementById('cd-days').textContent = '🎉';
-            document.getElementById('cd-hours').textContent = '🥳';
-            document.getElementById('cd-mins').textContent = '🎂';
-            document.getElementById('cd-secs').textContent = '🎈';
-            return;
-        }
-        const d = Math.floor(diff / (1000*60*60*24));
-        const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-        const m = Math.floor((diff % (1000*60*60)) / (1000*60));
-        const s = Math.floor((diff % (1000*60)) / 1000);
-        document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
-        document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
-        document.getElementById('cd-mins').textContent = String(m).padStart(2,'0');
-        document.getElementById('cd-secs').textContent = String(s).padStart(2,'0');
-    }
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+// Keyboard controls
+document.addEventListener('keydown', e => {
+  switch(e.code) {
+    case 'Space': e.preventDefault(); togglePlay(); break;
+    case 'ArrowRight': nextSong(); break;
+    case 'ArrowLeft': prevSong(); break;
+  }
+});
 
-    /* ========================================
-       MUSIC PLAYER
-    ======================================== */
-    /* Ganti URL di bawah dengan file musik romantis Anda */
-    const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
-    audio.loop = true;
-    audio.volume = 0.5;
-    audio.preload = 'auto';
-    let isPlaying = false;
+// Resize handler untuk canvas dan carousel
+window.addEventListener('resize', () => {
+  if (state.cameraReady) {
+    dom.canvas.width = dom.webcam.videoWidth;
+    dom.canvas.height = dom.webcam.videoHeight;
+  }
+  updateCarousel();
+});
 
-    function toggleMusic(){
-        if(isPlaying){
-            audio.pause();
-            document.getElementById('music-icon').className = 'fas fa-play';
-        } else {
-            audio.play().catch(()=>{});
-            document.getElementById('music-icon').className = 'fas fa-pause';
-        }
-        isPlaying = !isPlaying;
-    }
-    function changeVolume(val){
-        audio.volume = val / 100;
-    }
+// Touch/swipe pada carousel untuk mobile
+let touchStartX = 0;
+let touchStartY = 0;
+dom.carouselTrack.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+dom.carouselTrack.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) nextSong();
+    else prevSong();
+  }
+}, { passive: true });
 
-    /* ========================================
-       ENDING STARS
-    ======================================== */
-    (function initStars(){
-        const container = document.getElementById('stars-container');
-        for(let i = 0; i < 80; i++){
-            const star = document.createElement('div');
-            star.className = 'ending-star';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            star.style.animationDelay = Math.random() * 3 + 's';
-            star.style.width = (Math.random() * 3 + 1) + 'px';
-            star.style.height = star.style.width;
-            container.appendChild(star);
-        }
-    })();
-
-    /* ========================================
-       FINAL BURST (tombol ending)
-    ======================================== */
-    function finalBurst(){
-        burstConfetti(120);
-        /* Scroll ke atas dengan efek */
-        setTimeout(()=>{
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 1500);
-    }
-
-    /* ========================================
-       FOOTER YEAR
-    ======================================== */
-    document.getElementById('footer-year').textContent = new Date().getFullYear();
-
-    /* ========================================
-       CONFETTI AWAL (setelah loading)
-    ======================================== */
-    setTimeout(()=> burstConfetti(50), 3500);
-    </script>
+/* ================================================================
+   MULAI APLIKASI
+   ================================================================ */
+init();
+</script>
 </body>
 </html>
