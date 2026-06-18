@@ -2,1078 +2,671 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>AR MUSIC SYSTEM // CYBERPUNK</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Special Surprise for Silvia Tri Cahyani ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/howler@2/dist/howler.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
 <style>
-:root {
-  --neon-green: #00ff88;
-  --neon-blue: #00e5ff;
-  --neon-pink: #ff0066;
-  --bg-dark: #060610;
-  --glass-bg: rgba(6, 6, 16, 0.45);
-  --glass-border: rgba(0, 255, 136, 0.2);
-  --text-primary: #e8e8f0;
-  --text-dim: rgba(255,255,255,0.45);
+:root{
+  --neon-pink:#ff4fd8;--neon-purple:#8b5cf6;
+  --pink-glow:rgba(255,79,216,.4);--purple-glow:rgba(139,92,246,.3);
+  --dark:#08050f;--dark2:#0d0a18;--dark3:#120e20;
+  --glass:rgba(255,255,255,.05);--glass-border:rgba(255,255,255,.1);
+  --txt:#f0e6ff;--txt2:rgba(240,230,255,.55);
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:var(--bg-dark);font-family:'Rajdhani',sans-serif;color:var(--text-primary);-webkit-tap-highlight-color:transparent}
-body{position:relative}
+html{scroll-behavior:smooth}
+body{font-family:'Quicksand',sans-serif;background:var(--dark);color:var(--txt);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--dark)}
+::-webkit-scrollbar-thumb{background:var(--neon-pink);border-radius:3px}
+::selection{background:rgba(255,79,216,.3);color:#fff}
 
-/* === LOADING SCREEN === */
-#loading-screen{position:fixed;inset:0;z-index:9999;background:var(--bg-dark);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px}
-.loader-hex{width:80px;height:80px;position:relative}
-.loader-hex::before,.loader-hex::after{content:'';position:absolute;inset:0;border:2px solid var(--neon-green);border-radius:50%;animation:loaderSpin 2s linear infinite}
-.loader-hex::after{inset:10px;border-color:var(--neon-blue);animation-direction:reverse;animation-duration:1.5s}
-@keyframes loaderSpin{to{transform:rotate(360deg)}}
-.loader-title{font-family:'Orbitron',monospace;font-size:clamp(14px,3vw,22px);font-weight:700;letter-spacing:6px;color:var(--neon-green);text-shadow:0 0 20px rgba(0,255,136,0.4)}
-.loader-sub{font-size:14px;color:var(--text-dim);letter-spacing:2px}
-.loader-bar{width:200px;height:2px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden}
-.loader-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));border-radius:2px;transition:width 0.3s}
-.loader-status{font-family:'Orbitron',monospace;font-size:11px;color:var(--neon-blue);letter-spacing:1px;min-height:16px}
+/* ════════════ OPENING OVERLAY ════════════ */
+#opening{position:fixed;inset:0;z-index:9000;background:var(--dark);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;transition:opacity 1s ease,visibility 1s ease}
+#opening.hide{opacity:0;visibility:hidden;pointer-events:none}
+#particles-js{position:absolute;inset:0;z-index:0}
+.opening-content{position:relative;z-index:1;max-width:600px}
+.opening-text{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,4vw,1.8rem);line-height:1.6;opacity:0;transform:translateY(30px);margin-bottom:1rem}
+.opening-text.accent{color:var(--neon-pink);font-size:clamp(1.3rem,5vw,2.2rem);font-weight:600;text-shadow:0 0 30px var(--pink-glow)}
+#btn-start{margin-top:2.5rem;padding:16px 48px;background:transparent;border:2px solid var(--neon-pink);color:var(--neon-pink);font-family:'Quicksand',sans-serif;font-size:1.1rem;font-weight:600;border-radius:60px;cursor:pointer;opacity:0;transform:translateY(20px);transition:all .3s ease;position:relative;overflow:hidden}
+#btn-start::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));opacity:0;transition:opacity .3s ease;z-index:-1}
+#btn-start:hover{color:#fff;box-shadow:0 0 40px var(--pink-glow),0 0 80px rgba(139,92,246,.2);transform:translateY(-2px) scale(1.03)}
+#btn-start:hover::before{opacity:1}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 20px var(--pink-glow)}50%{box-shadow:0 0 50px var(--pink-glow),0 0 100px rgba(139,92,246,.15)}}
+#btn-start.glow{animation:pulseGlow 2s ease-in-out infinite}
 
-/* === AR CONTAINER === */
-#ar-container{position:fixed;inset:0;display:none}
-#webcam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);filter:brightness(0.7) contrast(1.1) saturate(0.8)}
-#hand-canvas{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1);pointer-events:none;z-index:2}
+/* ════════════ AR SECTION ════════════ */
+#ar-section{position:relative;min-height:100vh;overflow:hidden;background:var(--dark)}
+#webcam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);opacity:.35}
+.webcam-fallback{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(139,92,246,.15),transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(255,79,216,.1),transparent 60%),var(--dark)}
+#ar-overlay{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;opacity:0}
+.ar-dark{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(8,5,15,.5) 0%,rgba(8,5,15,.7) 50%,rgba(8,5,15,.9) 100%)}
 
-/* === OVERLAY EFEK === */
-.scan-line{position:fixed;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--neon-green),var(--neon-blue),var(--neon-green),transparent);opacity:0.15;z-index:3;pointer-events:none;animation:scanMove 4s linear infinite;box-shadow:0 0 20px var(--neon-green),0 0 60px var(--neon-green)}
-@keyframes scanMove{0%{top:-2px}100%{top:100%}}
-.vignette{position:fixed;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,0.65) 100%)}
-.grid-overlay{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0.03;background-image:linear-gradient(rgba(0,255,136,0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,0.3) 1px,transparent 1px);background-size:60px 60px}
+/* Photo Frame */
+#photo-wrapper{position:relative;perspective:800px;margin-bottom:2rem;cursor:pointer}
+#photo-frame{position:relative;border-radius:20px;overflow:hidden;transform-style:preserve-3d;transition:box-shadow .3s ease}
+#photo-frame::before{content:'';position:absolute;inset:-3px;border-radius:22px;background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple),var(--neon-pink),var(--neon-purple));background-size:300% 300%;animation:borderGlow 4s ease infinite;z-index:-1}
+@keyframes borderGlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#photo-frame img{display:block;width:clamp(220px,50vw,340px);height:clamp(220px,50vw,340px);object-fit:cover;border-radius:18px}
+.hologram-sweep{position:absolute;inset:0;border-radius:18px;overflow:hidden;pointer-events:none;z-index:3}
+.hologram-sweep::after{content:'';position:absolute;inset:-50%;background:linear-gradient(105deg,transparent 40%,rgba(255,79,216,.12) 45%,rgba(139,92,246,.18) 50%,rgba(255,79,216,.12) 55%,transparent 60%);animation:sweep 3s ease-in-out infinite}
+@keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.hologram-sweep::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.02) 2px,rgba(255,255,255,.02) 4px);pointer-events:none}
+.glass-layer{position:absolute;inset:0;border-radius:18px;background:rgba(255,255,255,.06);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);pointer-events:none;z-index:4}
+.neon-outer{position:absolute;inset:-20px;border-radius:35px;background:transparent;box-shadow:0 0 60px var(--pink-glow),0 0 120px var(--purple-glow);opacity:.4;z-index:-2;animation:neonPulse 3s ease-in-out infinite alternate}
+@keyframes neonPulse{0%{opacity:.3;transform:scale(.98)}100%{opacity:.5;transform:scale(1.02)}}
 
-/* === HUD CORNER BRACKETS === */
-.hud-corner{position:fixed;z-index:10;pointer-events:none}
-.hud-corner::before,.hud-corner::after{content:'';position:absolute;background:var(--neon-green);box-shadow:0 0 8px var(--neon-green)}
-.hud-corner.tl{top:16px;left:16px}.hud-corner.tl::before{width:40px;height:2px;top:0;left:0}.hud-corner.tl::after{width:2px;height:40px;top:0;left:0}
-.hud-corner.tr{top:16px;right:16px}.hud-corner.tr::before{width:40px;height:2px;top:0;right:0}.hud-corner.tr::after{width:2px;height:40px;top:0;right:0}
-.hud-corner.bl{bottom:16px;left:16px}.hud-corner.bl::before{width:40px;height:2px;bottom:0;left:0}.hud-corner.bl::after{width:2px;height:40px;bottom:0;left:0}
-.hud-corner.br{bottom:16px;right:16px}.hud-corner.br::before{width:40px;height:2px;bottom:0;right:0}.hud-corner.br::after{width:2px;height:40px;bottom:0;right:0}
+/* Typed Messages */
+#typed-container{max-width:600px;text-align:center;min-height:80px;opacity:0}
+#typed-output{font-family:'Playfair Display',serif;font-size:clamp(1rem,3.5vw,1.5rem);line-height:1.8;color:var(--txt);text-shadow:0 0 20px rgba(255,79,216,.2)}
+.typed-cursor{color:var(--neon-pink);font-weight:300;animation:cursorBlink .7s step-end infinite}
+@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
 
-/* === HUD TOP/BOTTOM === */
-.hud-top{position:fixed;top:20px;left:70px;right:70px;display:flex;justify-content:space-between;align-items:center;z-index:10;pointer-events:none;font-family:'Orbitron',monospace}
-.hud-status{display:flex;align-items:center;gap:8px;font-size:clamp(9px,1.5vw,12px);letter-spacing:2px;color:var(--neon-green)}
-.status-dot{width:6px;height:6px;border-radius:50%;background:var(--neon-green);box-shadow:0 0 8px var(--neon-green);animation:dotPulse 2s ease infinite}
-@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:0.3}}
-.hud-time{font-size:clamp(9px,1.5vw,12px);color:var(--neon-blue);letter-spacing:2px;text-shadow:0 0 10px rgba(0,229,255,0.3)}
-.hud-bottom{position:fixed;bottom:20px;left:70px;right:70px;display:flex;justify-content:space-between;align-items:center;z-index:10;pointer-events:none;font-family:'Orbitron',monospace;font-size:clamp(9px,1.3vw,11px);letter-spacing:1px}
-.hud-fps{color:var(--text-dim)}.hud-fps span:last-child{color:var(--neon-green)}
-.hud-tracking{display:flex;align-items:center;gap:6px;color:var(--text-dim);transition:color 0.3s}
-.hud-tracking.active{color:var(--neon-green)}
-.tracking-dot{width:5px;height:5px;border-radius:50%;background:var(--text-dim);transition:all 0.3s}
-.hud-tracking.active .tracking-dot{background:var(--neon-green);box-shadow:0 0 8px var(--neon-green)}
-.hud-gesture-log{color:var(--neon-blue);text-align:right;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:0.7}
+/* Floating Hearts */
+.floating-heart{position:absolute;pointer-events:none;z-index:5;filter:drop-shadow(0 0 6px rgba(255,79,216,.5))}
+.trail-heart{position:fixed;pointer-events:none;z-index:9998;filter:drop-shadow(0 0 4px rgba(255,79,216,.4))}
+.explosion-heart{position:fixed;pointer-events:none;z-index:9999;filter:drop-shadow(0 0 8px rgba(255,79,216,.6))}
 
-/* === HUD SIDE TICKS === */
-.hud-side{position:fixed;top:50%;transform:translateY(-50%);z-index:10;pointer-events:none;display:flex;flex-direction:column;gap:4px}
-.hud-side.left{left:20px}.hud-side.right{right:20px}
-.side-tick{width:20px;height:1px;background:rgba(0,255,136,0.2)}
-.side-tick:nth-child(5n){width:30px;background:rgba(0,255,136,0.35)}
+/* Toast */
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.5);background:rgba(255,79,216,.12);backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);border:1px solid rgba(255,79,216,.35);padding:24px 48px;border-radius:24px;font-family:'Playfair Display',serif;font-size:clamp(1.3rem,4vw,2rem);color:#fff;z-index:10000;pointer-events:none;box-shadow:0 0 60px var(--pink-glow),0 0 120px rgba(139,92,246,.15);text-shadow:0 0 20px var(--pink-glow)}
 
-/* === HUD RETICLE === */
-.hud-reticle{position:fixed;top:50%;left:50%;transform:translate(-50%,-55%);width:clamp(340px,50vw,480px);height:clamp(340px,50vw,480px);border:1px solid rgba(0,255,136,0.06);border-radius:50%;z-index:4;pointer-events:none;animation:reticleRotate 20s linear infinite}
-.hud-reticle::before{content:'';position:absolute;inset:-20px;border:1px dashed rgba(0,229,255,0.04);border-radius:50%;animation:reticleRotate 30s linear infinite reverse}
-@keyframes reticleRotate{to{transform:translate(-50%,-55%) rotate(360deg)}}
-/* Perbaikan: rotasi reticle tidak mengubah posisi */
-.hud-reticle{animation:none}
-.hud-reticle::before{animation:reticleSpin 30s linear infinite reverse}
-@keyframes reticleSpin{to{transform:rotate(360deg)}}
+/* ════════════ COUNTDOWN SECTION ════════════ */
+#countdown-section{position:relative;padding:100px 2rem;background:linear-gradient(180deg,var(--dark) 0%,var(--dark2) 50%,var(--dark) 100%);text-align:center;overflow:hidden}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,5vw,2.8rem);font-weight:600;margin-bottom:.5rem;background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section-sub{color:var(--txt2);font-size:clamp(.85rem,2vw,1.05rem);margin-bottom:3rem;font-weight:400}
+.countdown-grid{display:flex;justify-content:center;gap:clamp(12px,3vw,30px);flex-wrap:wrap}
+.cd-box{background:var(--glass);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border:1px solid var(--glass-border);border-radius:16px;padding:clamp(16px,3vw,28px) clamp(14px,2.5vw,32px);min-width:clamp(75px,18vw,130px);transition:transform .3s ease,box-shadow .3s ease}
+.cd-box:hover{transform:translateY(-4px);box-shadow:0 8px 30px var(--pink-glow)}
+.cd-num{font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,3.5rem);font-weight:700;background:linear-gradient(135deg,#fff,var(--neon-pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
+.cd-label{font-size:clamp(.65rem,1.5vw,.85rem);color:var(--txt2);text-transform:uppercase;letter-spacing:2px;margin-top:6px;font-weight:600}
 
-/* === MUSIC PLAYER === */
-#music-player{position:fixed;top:50%;left:50%;transform:translate(-50%,-58%);z-index:20;display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;max-width:600px;padding:0 16px;pointer-events:none}
-#music-card{width:100%;max-width:380px;background:var(--glass-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;pointer-events:auto;box-shadow:0 0 40px rgba(0,255,136,0.06),inset 0 1px 0 rgba(255,255,255,0.05);animation:cardFloat 6s ease-in-out infinite;transition:border-color 0.5s,box-shadow 0.5s}
-#music-card.glow-active{border-color:rgba(0,255,136,0.45);box-shadow:0 0 60px rgba(0,255,136,0.15),0 0 120px rgba(0,255,136,0.05),inset 0 1px 0 rgba(255,255,255,0.08)}
-@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.card-cover{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden}
-.card-cover img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s}
-#music-card:hover .card-cover img{transform:scale(1.05)}
-.cover-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,16,0.95) 0%,rgba(6,6,16,0.3) 40%,transparent 70%);pointer-events:none}
-.cover-glow{position:absolute;bottom:-40px;left:50%;transform:translateX(-50%);width:200px;height:80px;background:var(--neon-green);filter:blur(60px);opacity:0;transition:opacity 0.8s;border-radius:50%}
-#music-card.glow-active .cover-glow{opacity:0.25}
-.card-body{padding:0 20px 20px}
-.card-title{font-family:'Orbitron',monospace;font-size:clamp(14px,2.5vw,18px);font-weight:700;letter-spacing:1px;color:#fff;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-artist{font-size:14px;color:var(--neon-blue);letter-spacing:1px;margin-bottom:14px;font-weight:500}
+/* ════════════ GALLERY SECTION ════════════ */
+#gallery-section{position:relative;padding:100px 2rem;background:var(--dark);overflow:hidden}
+.carousel-wrapper{position:relative;max-width:900px;margin:0 auto;overflow:hidden;border-radius:20px}
+.carousel-track{display:flex;transition:transform .6s cubic-bezier(.25,.46,.45,.94)}
+.carousel-slide{min-width:100%;position:relative}
+.carousel-slide img{width:100%;height:clamp(250px,50vw,500px);object-fit:cover;display:block}
+.carousel-slide .slide-label{position:absolute;bottom:0;left:0;right:0;padding:30px 24px 20px;background:linear-gradient(transparent,rgba(8,5,15,.85));font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--txt)}
+.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:1rem;cursor:pointer;z-index:5;transition:all .3s ease;display:flex;align-items:center;justify-content:center}
+.carousel-btn:hover{background:rgba(255,79,216,.2);border-color:var(--neon-pink);box-shadow:0 0 20px var(--pink-glow)}
+.carousel-btn.prev{left:12px}
+.carousel-btn.next{right:12px}
+.carousel-dots{display:flex;justify-content:center;gap:8px;margin-top:20px}
+.carousel-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);border:none;cursor:pointer;transition:all .3s ease;padding:0}
+.carousel-dot.active{background:var(--neon-pink);box-shadow:0 0 10px var(--pink-glow);transform:scale(1.3)}
 
-/* Progress Bar */
-.progress-container{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.progress-time{font-family:'Orbitron',monospace;font-size:10px;color:var(--text-dim);min-width:32px;letter-spacing:1px}
-.progress-time.right{text-align:right}
-.progress-track{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:4px;position:relative;cursor:pointer;overflow:visible}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));border-radius:4px;width:0%;position:relative;transition:width 0.1s linear}
-.progress-dot{position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--neon-green);box-shadow:0 0 10px var(--neon-green),0 0 20px rgba(0,255,136,0.3);opacity:0;transition:opacity 0.3s}
-.progress-track:hover .progress-dot{opacity:1}
+/* ════════════ LETTER SECTION ════════════ */
+#letter-section{position:relative;padding:100px 2rem;background:linear-gradient(180deg,var(--dark) 0%,var(--dark2) 100%);text-align:center}
+#btn-letter{padding:18px 52px;background:transparent;border:1.5px solid var(--neon-purple);color:var(--neon-purple);font-family:'Quicksand',sans-serif;font-size:1.05rem;font-weight:600;border-radius:60px;cursor:pointer;transition:all .3s ease;position:relative;overflow:hidden}
+#btn-letter::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--neon-purple),var(--neon-pink));opacity:0;transition:opacity .3s ease;z-index:-1}
+#btn-letter:hover{color:#fff;box-shadow:0 0 40px var(--purple-glow);transform:translateY(-2px)}
+#btn-letter:hover::before{opacity:1}
+#letter-modal{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;padding:2rem;background:rgba(8,5,15,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#letter-modal.open{display:flex}
+.letter-card{background:rgba(255,255,255,.04);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:clamp(28px,5vw,48px);max-width:560px;width:100%;max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 0 80px rgba(139,92,246,.15),0 0 160px rgba(255,79,216,.08);transform:scale(.8);opacity:0;transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .4s ease}
+#letter-modal.open .letter-card{transform:scale(1);opacity:1}
+.letter-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--neon-pink),var(--neon-purple),var(--neon-pink));border-radius:24px 24px 0 0}
+.letter-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--txt2);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease}
+.letter-close:hover{background:rgba(255,79,216,.15);color:#fff;border-color:var(--neon-pink)}
+.letter-salutation{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--neon-pink);margin-bottom:1.5rem;font-style:italic}
+.letter-body{color:var(--txt);line-height:2;font-size:.95rem;text-align:left}
+.letter-body p{margin-bottom:1rem}
+.letter-sign{font-family:'Playfair Display',serif;font-size:2rem;text-align:right;margin-top:2rem;color:var(--neon-pink)}
 
-/* Visualizer */
-.visualizer{display:flex;align-items:flex-end;justify-content:center;gap:2px;height:32px;margin-bottom:14px}
-.vis-bar{width:3px;border-radius:2px;background:var(--neon-green);transition:height 0.15s ease;box-shadow:0 0 4px rgba(0,255,136,0.3)}
-.visualizer.paused .vis-bar{height:3px!important;opacity:0.25}
+/* ════════════ ENDING SECTION ════════════ */
+#ending-section{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4rem 2rem;overflow:hidden}
+#stars-canvas{position:absolute;inset:0;z-index:0}
+.ending-content{position:relative;z-index:1}
+.ending-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,8vw,4.5rem);font-weight:700;background:linear-gradient(135deg,var(--neon-pink),#fff,var(--neon-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.5rem;line-height:1.2}
+.ending-quote{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(.9rem,2.5vw,1.2rem);color:var(--txt2);max-width:500px;margin:0 auto;line-height:1.8}
 
-/* Controls */
-.card-controls{display:flex;align-items:center;justify-content:center;gap:20px}
-.ctrl-btn{background:none;border:1px solid rgba(255,255,255,0.12);color:var(--text-primary);width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.25s}
-.ctrl-btn:hover{border-color:var(--neon-green);color:var(--neon-green);box-shadow:0 0 15px rgba(0,255,136,0.2)}
-.ctrl-btn:active{transform:scale(0.9)}
-.play-btn{width:50px;height:50px;font-size:16px;border-color:var(--neon-green);color:var(--neon-green);box-shadow:0 0 20px rgba(0,255,136,0.15)}
-.play-btn:hover{background:rgba(0,255,136,0.1);box-shadow:0 0 30px rgba(0,255,136,0.3)}
+/* ════════════ MUSIC PLAYER ════════════ */
+#music-player{position:fixed;bottom:20px;right:20px;z-index:8999;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:10px 16px;transition:all .3s ease}
+#music-player:hover{background:rgba(255,255,255,.08);border-color:rgba(255,79,216,.2);box-shadow:0 4px 30px rgba(255,79,216,.1)}
+.music-btn{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));border:none;color:#fff;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s ease,box-shadow .2s ease;flex-shrink:0}
+.music-btn:hover{transform:scale(1.1);box-shadow:0 0 20px var(--pink-glow)}
+.vol-slider{-webkit-appearance:none;width:80px;height:3px;border-radius:2px;background:rgba(255,255,255,.15);outline:none;cursor:pointer}
+.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--neon-pink);cursor:pointer;box-shadow:0 0 8px var(--pink-glow)}
 
-/* === CAROUSEL === */
-#carousel-container{width:100%;max-width:700px;height:100px;position:relative;overflow:visible;pointer-events:auto}
-.carousel-card{position:absolute;top:0;left:50%;width:80px;height:80px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);cursor:pointer;transition:filter 0.4s;will-change:transform,opacity}
-.carousel-card img{width:100%;height:100%;object-fit:cover}
-.carousel-card.active{border-color:var(--neon-green);box-shadow:0 0 20px rgba(0,255,136,0.3)}
-.carousel-card .card-label{position:absolute;bottom:0;left:0;right:0;padding:3px 5px;background:linear-gradient(transparent,rgba(0,0,0,0.85));font-size:8px;font-family:'Orbitron',monospace;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-dim);transition:color 0.3s}
-.carousel-card.active .card-label{color:var(--neon-green)}
+/* ════════════ SKIP WEBCAM BTN ════════════ */
+#skip-cam{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:10;padding:8px 24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:30px;color:var(--txt2);font-family:'Quicksand',sans-serif;font-size:.8rem;cursor:pointer;transition:all .3s ease;opacity:0}
+#skip-cam:hover{background:rgba(255,79,216,.1);border-color:var(--neon-pink);color:var(--txt)}
+#skip-cam.show{opacity:1}
 
-/* === GESTURE INDICATOR === */
-#gesture-indicator{position:fixed;top:18%;left:50%;transform:translateX(-50%);z-index:30;pointer-events:none;text-align:center;opacity:0}
-.gesture-icon{font-size:36px;margin-bottom:4px;filter:drop-shadow(0 0 15px var(--neon-green))}
-.gesture-text{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:3px;color:var(--neon-green);text-shadow:0 0 15px rgba(0,255,136,0.5)}
+/* ════════════ SCROLL REVEAL ════════════ */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.15s}.reveal-d2{transition-delay:.3s}.reveal-d3{transition-delay:.45s}
 
-/* === HAND PROMPT === */
-#hand-prompt{position:fixed;bottom:130px;left:50%;transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:10px;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim);opacity:0;pointer-events:none}
-#hand-prompt i{font-size:20px;animation:handWave 2s ease-in-out infinite}
-@keyframes handWave{0%,100%{transform:rotate(0deg)}25%{transform:rotate(15deg)}75%{transform:rotate(-15deg)}}
-
-/* === INSTRUCTIONS === */
-.instruct-btn{position:fixed;bottom:20px;right:70px;z-index:25;pointer-events:auto!important;width:32px!important;height:32px!important;font-size:12px!important}
-#instructions{position:fixed;bottom:60px;right:20px;z-index:25;background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:12px;padding:16px 20px;min-width:240px;pointer-events:auto;font-size:13px}
-#instructions h3{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--neon-green);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(0,255,136,0.1)}
-.instr-item{display:flex;align-items:center;gap:10px;padding:5px 0;color:var(--text-dim)}
-.instr-item i{color:var(--neon-blue);width:18px;text-align:center;font-size:14px}
-
-/* === GESTURE FLASH === */
-.gesture-flash{position:fixed;inset:0;z-index:5;pointer-events:none;opacity:0}
-.gesture-flash.left{background:linear-gradient(to right,rgba(0,229,255,0.15),transparent 40%)}
-.gesture-flash.right{background:linear-gradient(to left,rgba(0,229,255,0.15),transparent 40%)}
-.gesture-flash.up{background:linear-gradient(to top,rgba(0,255,136,0.12),transparent 40%)}
-.gesture-flash.down{background:linear-gradient(to bottom,rgba(255,0,102,0.1),transparent 40%)}
-
-/* === ERROR FALLBACK === */
-#fallback-bg{position:fixed;inset:0;z-index:0;display:none;background:var(--bg-dark)}
-#fallback-bg .fb-grid{position:absolute;inset:0;opacity:0.04;background-image:linear-gradient(var(--neon-green) 1px,transparent 1px),linear-gradient(90deg,var(--neon-green) 1px,transparent 1px);background-size:80px 80px}
-
-/* === RESPONSIF === */
+/* ════════════ RESPONSIVE ════════════ */
 @media(max-width:640px){
-  #music-card{max-width:300px}
-  .card-cover{aspect-ratio:1/1}
-  .card-title{font-size:13px}
-  .card-artist{font-size:12px}
-  .carousel-card{width:60px;height:60px}
-  #carousel-container{max-width:400px;height:75px}
-  .hud-top{left:50px;right:50px}
-  .hud-bottom{left:50px;right:50px;flex-wrap:wrap;gap:4px}
-  .hud-side{display:none}
-  .hud-corner.tl,.hud-corner.bl{left:10px}.hud-corner.tr,.hud-corner.br{right:10px}
-  .hud-corner.tl,.hud-corner.tr{top:10px}.hud-corner.bl,.hud-corner.br{bottom:10px}
-  .instruct-btn{right:50px}
-  #instructions{right:10px;min-width:200px;font-size:12px}
-  #hand-prompt{bottom:110px;font-size:10px}
+  #music-player{bottom:12px;right:12px;padding:8px 12px;gap:8px}
+  .vol-slider{width:55px}
+  .carousel-btn{width:36px;height:36px;font-size:.8rem}
 }
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
-}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}.floating-heart,.trail-heart,.explosion-heart{display:none}}
 </style>
 </head>
 <body>
 
-<!-- Loading Screen -->
-<div id="loading-screen">
-  <div class="loader-hex"></div>
-  <div class="loader-title">AR MUSIC SYSTEM</div>
-  <div class="loader-sub">CYBERPUNK EDITION v3.1</div>
-  <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
-  <div class="loader-status" id="loader-status">Memuat modul...</div>
+<!-- ═══════════ OPENING OVERLAY ═══════════ -->
+<div id="opening">
+  <div id="particles-js"></div>
+  <div class="opening-content">
+    <p class="opening-text" id="text-1">Ada seseorang yang ingin menyampaikan sesuatu...</p>
+    <p class="opening-text accent" id="text-2">Untuk Silvia Tri Cahyani ❤️</p>
+    <button id="btn-start">Buka Kejutan</button>
+  </div>
 </div>
 
-<!-- Fallback Background (jika kamera tidak tersedia) -->
-<div id="fallback-bg"><div class="fb-grid"></div></div>
-
-<!-- AR Container -->
-<div id="ar-container">
+<!-- ═══════════ AR SECTION ═══════════ -->
+<section id="ar-section">
   <video id="webcam" autoplay playsinline muted></video>
-  <canvas id="hand-canvas"></canvas>
-  <div class="scan-line"></div>
-  <div class="vignette"></div>
-  <div class="grid-overlay"></div>
-
-  <!-- HUD Corners -->
-  <div class="hud-corner tl"></div>
-  <div class="hud-corner tr"></div>
-  <div class="hud-corner bl"></div>
-  <div class="hud-corner br"></div>
-
-  <!-- HUD Top -->
-  <div class="hud-top">
-    <div class="hud-status"><span class="status-dot"></span>AR MUSIC SYSTEM</div>
-    <div class="hud-time" id="hud-time"></div>
-  </div>
-
-  <!-- HUD Bottom -->
-  <div class="hud-bottom">
-    <div class="hud-fps"><span>FPS </span><span id="fps-counter">--</span></div>
-    <div class="hud-tracking" id="hud-tracking"><span class="tracking-dot"></span><span id="tracking-text">NO HAND</span></div>
-    <div class="hud-gesture-log" id="gesture-log"></div>
-  </div>
-
-  <!-- HUD Side Ticks -->
-  <div class="hud-side left" id="side-left"></div>
-  <div class="hud-side right" id="side-right"></div>
-
-  <!-- HUD Reticle -->
-  <div class="hud-reticle"></div>
-
-  <!-- Gesture Flash -->
-  <div class="gesture-flash left" id="flash-left"></div>
-  <div class="gesture-flash right" id="flash-right"></div>
-  <div class="gesture-flash up" id="flash-up"></div>
-  <div class="gesture-flash down" id="flash-down"></div>
-
-  <!-- Music Player -->
-  <div id="music-player">
-    <div id="music-card">
-      <div class="card-cover">
-        <img id="card-cover-img" src="" alt="Album Cover">
-        <div class="cover-overlay"></div>
-        <div class="cover-glow"></div>
-      </div>
-      <div class="card-body">
-        <h2 class="card-title" id="card-title">--</h2>
-        <p class="card-artist" id="card-artist">--</p>
-        <div class="progress-container">
-          <span class="progress-time" id="time-current">0:00</span>
-          <div class="progress-track" id="progress-track">
-            <div class="progress-fill" id="progress-fill"><div class="progress-dot"></div></div>
-          </div>
-          <span class="progress-time right" id="time-total">0:00</span>
-        </div>
-        <div class="visualizer paused" id="visualizer"></div>
-        <div class="card-controls">
-          <button class="ctrl-btn" id="btn-prev" aria-label="Lagu sebelumnya"><i class="fas fa-backward-step"></i></button>
-          <button class="ctrl-btn play-btn" id="btn-play" aria-label="Play/Pause"><i class="fas fa-play" id="play-icon"></i></button>
-          <button class="ctrl-btn" id="btn-next" aria-label="Lagu berikutnya"><i class="fas fa-forward-step"></i></button>
-        </div>
+  <div class="webcam-fallback" id="webcam-fallback"></div>
+  <div class="ar-dark"></div>
+  <button id="skip-cam"><i class="fas fa-forward"></i> Lewati Kamera</button>
+  <div id="ar-overlay">
+    <div id="photo-wrapper">
+      <div class="neon-outer"></div>
+      <div id="photo-frame">
+        <img src="https://www.image2url.com/r2/default/images/1781793460868-1333b584-8d22-4513-93d7-8c5201468b51.jpg" alt="Silvia Tri Cahyani" id="silvia-photo"
+             onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22340%22 height=%22340%22><defs><linearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22><stop offset=%220%25%22 stop-color=%22%23ff4fd8%22/><stop offset=%22100%25%22 stop-color=%22%238b5cf6%22/></linearGradient></defs><rect width=%22340%22 height=%22340%22 rx=%2218%22 fill=%22%23120e20%22/><text x=%2250%25%22 y=%2248%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22Playfair Display,serif%22 font-size=%2248%22 fill=%22url(%23g)%22>STC</text></svg>'">
+        <div class="hologram-sweep"></div>
+        <div class="glass-layer"></div>
       </div>
     </div>
-
-    <div id="carousel-container">
-      <div id="carousel-track"></div>
+    <div id="typed-container">
+      <div id="typed-output"></div>
     </div>
   </div>
+</section>
 
-  <!-- Gesture Indicator -->
-  <div id="gesture-indicator">
-    <div class="gesture-icon" id="gesture-icon"></div>
-    <div class="gesture-text" id="gesture-text"></div>
+<!-- ═══════════ COUNTDOWN SECTION ═══════════ -->
+<section id="countdown-section">
+  <h2 class="section-title reveal">Waktu Sejak Pertama Kali Mengenalmu</h2>
+  <p class="section-sub reveal reveal-d1">Setiap detik berarti ❤️</p>
+  <div class="countdown-grid">
+    <div class="cd-box reveal"><div class="cd-num" id="cd-days">000</div><div class="cd-label">Hari</div></div>
+    <div class="cd-box reveal reveal-d1"><div class="cd-num" id="cd-hours">00</div><div class="cd-label">Jam</div></div>
+    <div class="cd-box reveal reveal-d2"><div class="cd-num" id="cd-mins">00</div><div class="cd-label">Menit</div></div>
+    <div class="cd-box reveal reveal-d3"><div class="cd-num" id="cd-secs">00</div><div class="cd-label">Detik</div></div>
   </div>
+</section>
 
-  <!-- Hand Prompt -->
-  <div id="hand-prompt">
-    <i class="fas fa-hand"></i>
-    <span>TUNJUKKAN TANGAN ANDA</span>
+<!-- ═══════════ GALLERY SECTION ═══════════ -->
+<section id="gallery-section">
+  <h2 class="section-title reveal" style="text-align:center">Galeri Kenangan</h2>
+  <p class="section-sub reveal reveal-d1" style="text-align:center">Momen-momen yang tak terlupakan 📸</p>
+  <div class="carousel-wrapper reveal reveal-d2">
+    <div class="carousel-track" id="carousel-track">
+      <div class="carousel-slide">
+        <img src="https://www.image2url.com/r2/default/images/1781793460868-1333b584-8d22-4513-93d7-8c5201468b51.jpg" alt="Silvia" onerror="this.src='https://picsum.photos/seed/silvia-1/900/500.jpg'">
+        <div class="slide-label">Silvia Tri Cahyani ✨</div>
+      </div>
+      <div class="carousel-slide"><img src="https://picsum.photos/seed/moment-kenangan-2/900/500.jpg" alt="Kenangan"><div class="slide-label">Momen Berharga</div></div>
+      <div class="carousel-slide"><img src="https://picsum.photos/seed/moment-kenangan-3/900/500.jpg" alt="Kenangan"><div class="slide-label">Cerita Kita</div></div>
+      <div class="carousel-slide"><img src="https://picsum.photos/seed/moment-kenangan-4/900/500.jpg" alt="Kenangan"><div class="slide-label">Tawa & Bahagia</div></div>
+      <div class="carousel-slide"><img src="https://picsum.photos/seed/moment-kenangan-5/900/500.jpg" alt="Kenangan"><div class="slide-label">Kenangan Indah</div></div>
+    </div>
+    <button class="carousel-btn prev" onclick="moveCarousel(-1)" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+    <button class="carousel-btn next" onclick="moveCarousel(1)" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
   </div>
+  <div class="carousel-dots" id="carousel-dots"></div>
+</section>
 
-  <!-- Instructions Button -->
-  <button class="ctrl-btn instruct-btn" id="btn-instructions" aria-label="Panduan gestur"><i class="fas fa-question"></i></button>
+<!-- ═══════════ LETTER SECTION ═══════════ -->
+<section id="letter-section">
+  <h2 class="section-title reveal">Ada Sesuatu Untukmu</h2>
+  <p class="section-sub reveal reveal-d1">Sebuah surat dari hati 💌</p>
+  <button id="btn-letter" class="reveal reveal-d2" onclick="openLetter()">Baca Surat</button>
+</section>
 
-  <!-- Instructions Panel -->
-  <div id="instructions" style="display:none">
-    <h3>GESTURE CONTROL</h3>
-    <div class="instr-item"><i class="fas fa-hand-point-right"></i> Geser kanan &rarr; Lagu berikutnya</div>
-    <div class="instr-item"><i class="fas fa-hand-point-left"></i> Geser kiri &rarr; Lagu sebelumnya</div>
-    <div class="instr-item"><i class="fas fa-thumbs-up"></i> Jempol atas &rarr; Play</div>
-    <div class="instr-item"><i class="fas fa-thumbs-down"></i> Jempol bawah &rarr; Pause</div>
+<!-- ═══════════ LETTER MODAL ═══════════ -->
+<div id="letter-modal" onclick="closeLetterOutside(event)">
+  <div class="letter-card" id="letter-card">
+    <button class="letter-close" onclick="closeLetter()" aria-label="Close"><i class="fas fa-times"></i></button>
+    <!-- ↕️ Edit isi surat di bawah ini ↕️ -->
+    <div class="letter-salutation">Silvia,</div>
+    <div class="letter-body" id="letter-body">
+      <p>Ada banyak hal yang ingin aku sampaikan, tapi kata-kata terasa tak cukup untuk menggambarkan betapa berartinya kamu.</p>
+      <p>Terima kasih untuk setiap senyum yang pernah kamu berikan, untuk setiap cerita yang pernah kita bagikan, dan untuk setiap momen yang membuat hari ini terasa lebih berwarna.</p>
+      <p>Kamu mungkin tidak menyadari, tapi kehadiranmu telah mengubah banyak hal. Kamu membuat dunia terasa sedikit lebih hangat, sedikit lebih indah, dan jauh lebih bermakna.</p>
+      <p>Jangan pernah meragukan keistimewaan yang kamu miliki. Kamu adalah orang yang luar biasa, dan aku berharap kamu selalu tahu itu.</p>
+      <p>Semoga setiap langkahmu dipenuhi kebahagiaan, setiap impianmu terwujud, dan setiap harimu dipenuhi alasan untuk tersenyum.</p>
+    </div>
+    <div class="letter-sign">❤️</div>
   </div>
 </div>
 
+<!-- ═══════════ ENDING SECTION ═══════════ -->
+<section id="ending-section">
+  <canvas id="stars-canvas"></canvas>
+  <div class="ending-content">
+    <h2 class="ending-title reveal">Thank You, Silvia ❤️</h2>
+    <p class="ending-quote reveal reveal-d1">"Some people become memories.<br>Some become reasons to smile."</p>
+  </div>
+</section>
+
+<!-- ═══════════ MUSIC PLAYER ═══════════ -->
+<div id="music-player">
+  <button class="music-btn" id="music-toggle" onclick="toggleMusic()" aria-label="Toggle music">
+    <i class="fas fa-play" id="music-icon"></i>
+  </button>
+  <input type="range" min="0" max="100" value="40" class="vol-slider" id="vol-slider" oninput="setVolume(this.value)" aria-label="Volume">
+</div>
+
+<!-- ═══════════ SCRIPTS ═══════════ -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
 <script>
-/* ================================================================
-   DATA PLAYLIST - Menggunakan sample audio dari SoundHelix
-   ================================================================ */
-const playlist = [
-  { title:"Neon Genesis", artist:"Cyber Pulse", cover:"https://picsum.photos/seed/neon01/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-  { title:"Digital Rain", artist:"Synth Wave", cover:"https://picsum.photos/seed/digi02/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-  { title:"Hologram Dreams", artist:"Neon Drift", cover:"https://picsum.photos/seed/holo03/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-  { title:"Chrome Horizon", artist:"Voltage", cover:"https://picsum.photos/seed/chrm04/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
-  { title:"Midnight Protocol", artist:"Ghost Circuit", cover:"https://picsum.photos/seed/midn05/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
-  { title:"Quantum Flux", artist:"Data Stream", cover:"https://picsum.photos/seed/quant06/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
-  { title:"Electric Mirage", artist:"Pulse Code", cover:"https://picsum.photos/seed/elec07/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
-  { title:"Synthetica", artist:"Binary Star", cover:"https://picsum.photos/seed/synth08/400/400", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
-];
+/* ══════════════════════════════════════
+   KONFIGURASI — Edit variabel di sini
+   ══════════════════════════════════════ */
 
-/* ================================================================
-   STATE MANAGEMENT
-   ================================================================ */
-const state = {
-  currentIndex: 0,
-  isPlaying: false,
-  currentTime: 0,
-  duration: 0,
-  howl: null,
-  handDetected: false,
-  handHistory: [],       // Buffer posisi pergelangan tangan
-  thumbHoldCount: 0,     // Hitungan frame untuk gestur jempol
-  lastGesture: null,
-  lastGestureTime: 0,
-  fps: 0,
-  frameCount: 0,
-  lastFpsTime: performance.now(),
-  cameraReady: false,
-  mediapipeReady: false,
-  instructionsOpen: false,
-  noHandTimer: 0         // Timer untuk menampilkan prompt tangan
-};
+// Ganti dengan tanggal pertama kali mengenal Silvia
+const FIRST_MET_DATE = new Date('2024-06-15T00:00:00');
 
-/* ================================================================
-   KONSTANTA
-   ================================================================ */
-const SWIPE_BUFFER_SIZE = 12;
-const SWIPE_THRESHOLD = 0.28;   // Total perpindahan x yang diperlukan
-const SWIPE_COOLDOWN = 1500;     // ms
-const THUMB_HOLD_REQUIRED = 8;   // Frame berturut-turut
-const THUMB_COOLDOWN = 2000;
-const NO_HAND_SHOW_DELAY = 3000; // ms sebelum prompt tangan muncul
+// Ganti URL di bawah dengan file musik romantis Anda
+const MUSIC_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3';
 
-// Koneksi landmark tangan (MediaPipe)
-const HAND_CONNECTIONS = [
-  [0,1],[1,2],[2,3],[3,4],
-  [0,5],[5,6],[6,7],[7,8],
-  [5,9],[9,10],[10,11],[11,12],
-  [9,13],[13,14],[14,15],[15,16],
-  [13,17],[17,18],[18,19],[19,20],
-  [0,17]
-];
-
-/* ================================================================
-   REFERENSI DOM
-   ================================================================ */
-const $ = id => document.getElementById(id);
-const dom = {
-  loadingScreen: $('loading-screen'),
-  loaderFill: $('loader-fill'),
-  loaderStatus: $('loader-status'),
-  arContainer: $('ar-container'),
-  fallbackBg: $('fallback-bg'),
-  webcam: $('webcam'),
-  canvas: $('hand-canvas'),
-  hudTime: $('hud-time'),
-  fpsCounter: $('fps-counter'),
-  hudTracking: $('hud-tracking'),
-  trackingText: $('tracking-text'),
-  gestureLog: $('gesture-log'),
-  musicCard: $('music-card'),
-  cardCoverImg: $('card-cover-img'),
-  cardTitle: $('card-title'),
-  cardArtist: $('card-artist'),
-  timeCurrent: $('time-current'),
-  timeTotal: $('time-total'),
-  progressFill: $('progress-fill'),
-  progressTrack: $('progress-track'),
-  visualizer: $('visualizer'),
-  btnPlay: $('btn-play'),
-  playIcon: $('play-icon'),
-  btnPrev: $('btn-prev'),
-  btnNext: $('btn-next'),
-  carouselTrack: $('carousel-track'),
-  gestureIndicator: $('gesture-indicator'),
-  gestureIcon: $('gesture-icon'),
-  gestureText: $('gesture-text'),
-  handPrompt: $('hand-prompt'),
-  btnInstructions: $('btn-instructions'),
-  instructions: $('instructions'),
-  flashLeft: $('flash-left'),
-  flashRight: $('flash-right'),
-  flashUp: $('flash-up'),
-  flashDown: $('flash-down')
-};
-const ctx = dom.canvas.getContext('2d');
-
-/* ================================================================
-   UTILITAS
-   ================================================================ */
-function formatTime(s) {
-  if (!isFinite(s) || s < 0) s = 0;
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60);
-  return m + ':' + (sec < 10 ? '0' : '') + sec;
-}
-
-function updateLoader(pct, text) {
-  dom.loaderFill.style.width = pct + '%';
-  if (text) dom.loaderStatus.textContent = text;
-}
-
-/* ================================================================
-   INISIALISASI
-   ================================================================ */
-async function init() {
-  // Buat side ticks
-  ['side-left','side-right'].forEach(id => {
-    const el = $(id);
-    for (let i = 0; i < 25; i++) {
-      const tick = document.createElement('div');
-      tick.className = 'side-tick';
-      el.appendChild(tick);
-    }
-  });
-
-  // Buat visualizer bars
-  for (let i = 0; i < 28; i++) {
-    const bar = document.createElement('div');
-    bar.className = 'vis-bar';
-    bar.style.height = '3px';
-    bar.style.opacity = '0.25';
-    bar.dataset.idx = i;
-    dom.visualizer.appendChild(bar);
-  }
-
-  // Render carousel
-  renderCarousel();
-
-  // Muat lagu pertama
-  loadSong(0, false);
-
-  // Mulai kamera
-  try {
-    updateLoader(10, 'Mengakses kamera...');
-    await setupCamera();
-    updateLoader(40, 'Kamera aktif. Memuat AI...');
-  } catch(e) {
-    console.warn('Kamera tidak tersedia:', e.message);
-    updateLoader(40, 'Kamera tidak tersedia - mode fallback');
-    dom.fallbackBg.style.display = 'block';
-  }
-
-  // Mulai MediaPipe
-  try {
-    updateLoader(50, 'Memuat model deteksi tangan...');
-    await setupMediaPipe();
-    updateLoader(90, 'Hampir siap...');
-  } catch(e) {
-    console.warn('MediaPipe gagal:', e.message);
-    updateLoader(90, 'Gesture control tidak tersedia');
-  }
-
-  // Selesai
-  updateLoader(100, 'SISTEM ONLINE');
-  await new Promise(r => setTimeout(r, 600));
-
-  gsap.to(dom.loadingScreen, {
-    opacity: 0,
-    duration: 0.6,
-    ease: 'power2.inOut',
-    onComplete: () => {
-      dom.loadingScreen.style.display = 'none';
-      dom.arContainer.style.display = 'block';
-      gsap.from('#music-card', { scale: 0.8, opacity: 0, duration: 0.8, ease: 'back.out(1.4)' });
-      gsap.from('.carousel-card', { y: 40, opacity: 0, duration: 0.6, stagger: 0.06, delay: 0.3, ease: 'power2.out' });
-      gsap.from('.hud-corner', { scale: 0, opacity: 0, duration: 0.4, stagger: 0.1, delay: 0.5, ease: 'back.out(2)' });
-    }
-  });
-
-  // Loop utama
-  requestAnimationFrame(mainLoop);
-  setInterval(updateHUDTime, 1000);
-  updateHUDTime();
-}
-
-/* ================================================================
-   KAMERA (WebRTC)
-   ================================================================ */
-function setupCamera() {
-  return new Promise((resolve, reject) => {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      reject(new Error('WebRTC tidak didukung'));
-      return;
-    }
-    navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
-      audio: false
-    }).then(stream => {
-      dom.webcam.srcObject = stream;
-      dom.webcam.onloadedmetadata = () => {
-        dom.canvas.width = dom.webcam.videoWidth;
-        dom.canvas.height = dom.webcam.videoHeight;
-        state.cameraReady = true;
-        resolve();
-      };
-    }).catch(reject);
-  });
-}
-
-/* ================================================================
-   MEDIAPIPE HANDS
-   ================================================================ */
-function setupMediaPipe() {
-  return new Promise((resolve, reject) => {
-    try {
-      const hands = new Hands({
-        locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-      });
-      hands.setOptions({
-        maxNumHands: 1,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.65,
-        minTrackingConfidence: 0.5
-      });
-      hands.onResults(onHandResults);
-
-      // Gunakan Camera utils untuk loop frame
-      if (state.cameraReady) {
-        const cam = new Camera(dom.webcam, {
-          onFrame: async () => { await hands.send({ image: dom.webcam }); },
-          width: 1280,
-          height: 720
-        });
-        cam.start().then(() => {
-          state.mediapipeReady = true;
-          resolve();
-        }).catch(reject);
-      } else {
-        resolve(); // Tidak bisa dijalankan tanpa kamera
-      }
-    } catch(e) {
-      reject(e);
-    }
-  });
-}
-
-/* ================================================================
-   HASIL DETEKSI TANGAN
-   ================================================================ */
-function onHandResults(results) {
-  // Bersihkan canvas
-  ctx.clearRect(0, 0, dom.canvas.width, dom.canvas.height);
-
-  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-    const landmarks = results.multiHandLandmarks[0];
-    state.handDetected = true;
-    state.noHandTimer = 0;
-
-    // Gambar kerangka tangan dengan efek neon
-    drawHandSkeleton(landmarks);
-
-    // Update posisi pergelangan tangan ke buffer
-    const wrist = landmarks[0];
-    state.handHistory.push({ x: wrist.x, y: wrist.y, time: performance.now() });
-    if (state.handHistory.length > SWIPE_BUFFER_SIZE) {
-      state.handHistory.shift();
-    }
-
-    // Deteksi gestur
-    detectGestures(landmarks);
-  } else {
-    state.handDetected = false;
-    state.handHistory = [];
-    state.thumbHoldCount = 0;
-  }
-}
-
-/* ================================================================
-   GAMBAR KERANGKA TANGAN (NEON HOLOGRAM)
-   ================================================================ */
-function drawHandSkeleton(landmarks) {
-  const w = dom.canvas.width;
-  const h = dom.canvas.height;
-
-  // Gambar koneksi (garis)
-  ctx.save();
-  ctx.shadowColor = '#00e5ff';
-  ctx.shadowBlur = 12;
-  ctx.strokeStyle = '#00e5ff';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-
-  HAND_CONNECTIONS.forEach(([a, b]) => {
-    const la = landmarks[a];
-    const lb = landmarks[b];
-    ctx.beginPath();
-    ctx.moveTo(la.x * w, la.y * h);
-    ctx.lineTo(lb.x * w, lb.y * h);
-    ctx.stroke();
-  });
-
-  // Gambar landmark (titik)
-  ctx.shadowBlur = 16;
-  ctx.shadowColor = '#00e5ff';
-  landmarks.forEach((lm, i) => {
-    const x = lm.x * w;
-    const y = lm.y * h;
-    const r = [0, 4, 8, 12, 16, 20].includes(i) ? 5 : 3; // Titik ujung lebih besar
-
-    ctx.beginPath();
-    ctx.arc(x, y, Math.max(1, r), 0, Math.PI * 2);
-    ctx.fillStyle = [4].includes(i) ? '#00ff88' : '#00e5ff'; // Ibu jari hijau
-    ctx.fill();
-
-    // Ring luar untuk titik ujung jari
-    if ([4, 8, 12, 16, 20].includes(i)) {
-      ctx.beginPath();
-      ctx.arc(x, y, Math.max(1, r + 4), 0, Math.PI * 2);
-      ctx.strokeStyle = [4].includes(i) ? 'rgba(0,255,136,0.4)' : 'rgba(0,229,255,0.4)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-  });
-
-  ctx.restore();
-}
-
-/* ================================================================
-   DETEKSI GESTUR
-   ================================================================ */
-function detectGestures(landmarks) {
-  const now = performance.now();
-
-  // --- Deteksi Swipe ---
-  if (state.handHistory.length >= SWIPE_BUFFER_SIZE) {
-    const oldest = state.handHistory[0];
-    const newest = state.handHistory[state.handHistory.length - 1];
-    const dx = newest.x - oldest.x; // Perpindahan x (koordinat asli, belum di-mirror)
-
-    // Karena video di-mirror: dx negatif = tangan bergerak ke kanan di layar = SWIPE RIGHT
-    if (Math.abs(dx) > SWIPE_THRESHOLD && (now - state.lastGestureTime) > SWIPE_COOLDOWN) {
-      const gesture = dx < 0 ? 'swipe_right' : 'swipe_left';
-      triggerGesture(gesture);
-      state.handHistory = []; // Reset buffer
-      return;
-    }
-  }
-
-  // --- Deteksi Jempol Atas/Bawah ---
-  const thumbTip = landmarks[4];
-  const thumbIP = landmarks[3];
-  const thumbMCP = landmarks[2];
-
-  // Periksa apakah 4 jari lain terlipat (tip di bawah PIP)
-  const fingerTips = [8, 12, 16, 20];
-  const fingerPIPs = [6, 10, 14, 18];
-  const allCurled = fingerTips.every((tipIdx, i) => {
-    return landmarks[tipIdx].y > landmarks[fingerPIPs[i]].y;
-  });
-
-  if (allCurled) {
-    // Jempol atas: ujung jempol lebih tinggi (y lebih kecil) dari MCP
-    if (thumbTip.y < thumbMCP.y - 0.06) {
-      state.thumbHoldCount++;
-      if (state.thumbHoldCount >= THUMB_HOLD_REQUIRED && (now - state.lastGestureTime) > THUMB_COOLDOWN) {
-        triggerGesture('thumbs_up');
-        state.thumbHoldCount = 0;
-        return;
-      }
-    }
-    // Jempol bawah: ujung jempol lebih rendah (y lebih besar) dari MCP
-    else if (thumbTip.y > thumbMCP.y + 0.06) {
-      state.thumbHoldCount++;
-      if (state.thumbHoldCount >= THUMB_HOLD_REQUIRED && (now - state.lastGestureTime) > THUMB_COOLDOWN) {
-        triggerGesture('thumbs_down');
-        state.thumbHoldCount = 0;
-        return;
-      }
-    } else {
-      state.thumbHoldCount = 0;
-    }
-  } else {
-    state.thumbHoldCount = 0;
-  }
-}
-
-function triggerGesture(gesture) {
-  state.lastGesture = gesture;
-  state.lastGestureTime = performance.now();
-  state.thumbHoldCount = 0;
-
-  // Log gestur
-  const labels = {
-    swipe_right: 'NEXT TRACK',
-    swipe_left: 'PREV TRACK',
-    thumbs_up: 'PLAY',
-    thumbs_down: 'PAUSE'
-  };
-  dom.gestureLog.textContent = labels[gesture] || gesture;
-
-  // Tampilkan indikator gestur
-  showGestureIndicator(gesture);
-
-  // Flash efek
-  flashGesture(gesture);
-
-  // Eksekusi aksi
-  switch(gesture) {
-    case 'swipe_right': nextSong(); break;
-    case 'swipe_left': prevSong(); break;
-    case 'thumbs_up': if (!state.isPlaying) playSong(); break;
-    case 'thumbs_down': if (state.isPlaying) pauseSong(); break;
-  }
-}
-
-/* ================================================================
-   INDIKATOR GESTUR VISUAL
-   ================================================================ */
-function showGestureIndicator(gesture) {
-  const icons = {
-    swipe_right: '<i class="fas fa-forward-step"></i>',
-    swipe_left: '<i class="fas fa-backward-step"></i>',
-    thumbs_up: '<i class="fas fa-thumbs-up"></i>',
-    thumbs_down: '<i class="fas fa-thumbs-down"></i>'
-  };
-  const texts = {
-    swipe_right: 'NEXT TRACK',
-    swipe_left: 'PREV TRACK',
-    thumbs_up: 'PLAY',
-    thumbs_down: 'PAUSE'
-  };
-
-  dom.gestureIcon.innerHTML = icons[gesture] || '';
-  dom.gestureText.textContent = texts[gesture] || '';
-
-  gsap.killTweensOf(dom.gestureIndicator);
-  gsap.fromTo(dom.gestureIndicator,
-    { opacity: 0, y: 20, scale: 0.8 },
-    { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: 'back.out(2)',
-      onComplete: () => {
-        gsap.to(dom.gestureIndicator, { opacity: 0, y: -20, duration: 0.5, delay: 0.6, ease: 'power2.in' });
-      }
-    }
-  );
-}
-
-function flashGesture(gesture) {
-  const map = { swipe_left: 'flash-left', swipe_right: 'flash-right', thumbs_up: 'flash-up', thumbs_down: 'flash-down' };
-  const el = dom[map[gesture]];
-  if (!el) return;
-  gsap.killTweensOf(el);
-  gsap.fromTo(el, { opacity: 1 }, { opacity: 0, duration: 0.6, ease: 'power2.out' });
-}
-
-/* ================================================================
-   MUSIC PLAYER - Howler.js
-   ================================================================ */
-function loadSong(index, autoPlay = false) {
-  // Hentikan lagu sebelumnya
-  if (state.howl) {
-    state.howl.unload();
-    state.howl = null;
-  }
-
-  state.currentIndex = index;
-  state.currentTime = 0;
-  state.duration = 0;
-  const song = playlist[index];
-
-  // Update UI
-  dom.cardCoverImg.src = song.cover;
-  dom.cardTitle.textContent = song.title;
-  dom.cardArtist.textContent = song.artist;
-  dom.timeCurrent.textContent = '0:00';
-  dom.timeTotal.textContent = '0:00';
-  dom.progressFill.style.width = '0%';
-
-  // Highlight carousel
-  updateCarousel();
-
-  // Buat Howl baru
-  state.howl = new Howl({
-    src: [song.src],
-    html5: true, // Gunakan HTML5 Audio untuk streaming
-    format: ['mp3'],
-    onload: function() {
-      state.duration = state.howl.duration();
-      dom.timeTotal.textContent = formatTime(state.duration);
+/* ══════════════════════════════════════
+   PARTICLES.JS — Star Field
+   ══════════════════════════════════════ */
+function initParticles() {
+  if (typeof particlesJS === 'undefined') return;
+  particlesJS('particles-js', {
+    particles: {
+      number: { value: 120, density: { enable: true, value_area: 900 } },
+      color: { value: ['#ff4fd8', '#8b5cf6', '#ffffff', '#f0e6ff'] },
+      shape: { type: 'circle' },
+      opacity: { value: 0.5, random: true, anim: { enable: true, speed: 0.8, opacity_min: 0.1, sync: false } },
+      size: { value: 2, random: true, anim: { enable: true, speed: 1, size_min: 0.3, sync: false } },
+      line_linked: { enable: false },
+      move: { enable: true, speed: 0.6, direction: 'none', random: true, out_mode: 'out' }
     },
-    onloaderror: function(id, err) {
-      console.warn('Gagal memuat audio:', err);
-      // Simulasi durasi jika audio gagal dimuat
-      state.duration = 240;
-      dom.timeTotal.textContent = formatTime(state.duration);
-    },
-    onplay: function() {
-      state.isPlaying = true;
-      dom.playIcon.className = 'fas fa-pause';
-      dom.visualizer.classList.remove('paused');
-      dom.musicCard.classList.add('glow-active');
-    },
-    onpause: function() {
-      state.isPlaying = false;
-      dom.playIcon.className = 'fas fa-play';
-      dom.visualizer.classList.add('paused');
-      dom.musicCard.classList.remove('glow-active');
-    },
-    onstop: function() {
-      state.isPlaying = false;
-      dom.playIcon.className = 'fas fa-play';
-      dom.visualizer.classList.add('paused');
-      dom.musicCard.classList.remove('glow-active');
-    },
-    onend: function() {
-      // Otomatis lanjut ke lagu berikutnya
-      nextSong();
-    }
-  });
-
-  if (autoPlay) {
-    state.howl.play();
-  }
-}
-
-function playSong() {
-  if (!state.howl) return;
-  if (state.isPlaying) return;
-  state.howl.play();
-}
-
-function pauseSong() {
-  if (!state.howl) return;
-  if (!state.isPlaying) return;
-  state.howl.pause();
-}
-
-function togglePlay() {
-  if (state.isPlaying) pauseSong();
-  else playSong();
-}
-
-function nextSong() {
-  const next = (state.currentIndex + 1) % playlist.length;
-  // Animasi transisi
-  gsap.to(dom.musicCard, {
-    scale: 0.95, opacity: 0.5, duration: 0.15,
-    onComplete: () => {
-      loadSong(next, state.isPlaying);
-      gsap.to(dom.musicCard, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.2)' });
-    }
+    interactivity: { detect_on: 'canvas', events: { onhover: { enable: false }, onclick: { enable: false }, resize: true } },
+    retina_detect: true
   });
 }
+initParticles();
 
-function prevSong() {
-  // Jika sudah diputar > 3 detik, restart lagu. Jika tidak, ke lagu sebelumnya
-  if (state.currentTime > 3) {
-    if (state.howl) state.howl.seek(0);
-    state.currentTime = 0;
-    return;
-  }
-  const prev = (state.currentIndex - 1 + playlist.length) % playlist.length;
-  gsap.to(dom.musicCard, {
-    scale: 0.95, opacity: 0.5, duration: 0.15,
-    onComplete: () => {
-      loadSong(prev, state.isPlaying);
-      gsap.to(dom.musicCard, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.2)' });
-    }
-  });
+/* ══════════════════════════════════════
+   OPENING ANIMATION (GSAP Timeline)
+   ══════════════════════════════════════ */
+const openingTl = gsap.timeline({ delay: 0.8 });
+openingTl
+  .to('#text-1', { opacity: 1, y: 0, duration: 1.5, ease: 'power2.out' })
+  .to('#text-1', { opacity: 0, y: -20, duration: 1, delay: 2.2 })
+  .to('#text-2', { opacity: 1, y: 0, duration: 1.5, ease: 'power2.out' }, '-=0.3')
+  .to('#btn-start', { opacity: 1, y: 0, duration: 1, ease: 'back.out(1.7)' }, '-=0.6')
+  .call(() => document.getElementById('btn-start').classList.add('glow'));
+
+/* ══════════════════════════════════════
+   OPEN BUTTON — Activate AR
+   ══════════════════════════════════════ */
+document.getElementById('btn-start').addEventListener('click', startAR);
+document.getElementById('skip-cam').addEventListener('click', () => {
+  document.getElementById('webcam-fallback').style.display = 'block';
+  document.getElementById('webcam').style.display = 'none';
+  document.getElementById('skip-cam').style.display = 'none';
+  showARContent();
+});
+
+let arStarted = false;
+function startAR() {
+  if (arStarted) return;
+  arStarted = true;
+  gsap.to('#opening', { opacity: 0, duration: 0.8, onComplete: () => {
+    document.getElementById('opening').classList.add('hide');
+    initWebcam();
+  }});
 }
 
-function seekTo(ratio) {
-  if (!state.howl || !isFinite(state.duration) || state.duration <= 0) return;
-  const seekTime = ratio * state.duration;
-  state.howl.seek(seekTime);
-  state.currentTime = seekTime;
-}
-
-/* ================================================================
-   CAROUSEL
-   ================================================================ */
-function renderCarousel() {
-  dom.carouselTrack.innerHTML = '';
-  playlist.forEach((song, i) => {
-    const card = document.createElement('div');
-    card.className = 'carousel-card' + (i === state.currentIndex ? ' active' : '');
-    card.innerHTML = `<img src="${song.cover}" alt="${song.title}" loading="lazy"><div class="card-label">${song.title}</div>`;
-    card.addEventListener('click', () => {
-      if (i === state.currentIndex) return;
-      gsap.to(dom.musicCard, {
-        scale: 0.95, opacity: 0.5, duration: 0.15,
-        onComplete: () => {
-          loadSong(i, state.isPlaying);
-          gsap.to(dom.musicCard, { scale: 1, opacity: 1, duration: 0.4, ease: 'back.out(1.2)' });
-        }
-      });
+function initWebcam() {
+  const video = document.getElementById('webcam');
+  const skipBtn = document.getElementById('skip-cam');
+  navigator.mediaDevices?.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
+    .then(stream => {
+      video.srcObject = stream;
+      video.onloadedmetadata = () => { video.play(); showARContent(); };
+      skipBtn.classList.add('show');
+      setTimeout(() => { skipBtn.style.opacity = '0'; setTimeout(() => skipBtn.style.display = 'none', 500); }, 6000);
+    })
+    .catch(() => {
+      video.style.display = 'none';
+      document.getElementById('webcam-fallback').style.display = 'block';
+      showARContent();
     });
-    dom.carouselTrack.appendChild(card);
-  });
-  updateCarousel();
 }
 
-function updateCarousel() {
-  const cards = dom.carouselTrack.querySelectorAll('.carousel-card');
-  const isMobile = window.innerWidth < 640;
-  const spacing = isMobile ? 75 : 110;
+function showARContent() {
+  const arTl = gsap.timeline({ delay: 0.5 });
+  arTl
+    .to('#ar-overlay', { opacity: 1, duration: 0.8 })
+    .from('#photo-wrapper', { scale: 0.3, opacity: 0, rotation: -8, duration: 1.2, ease: 'back.out(1.7)' }, '-=0.3')
+    .to('#typed-container', { opacity: 1, duration: 0.6 }, '-=0.4');
 
-  cards.forEach((card, i) => {
-    const offset = i - state.currentIndex;
-    const absOffset = Math.abs(offset);
+  setTimeout(initTyped, 1800);
+  startFloatingHearts();
+  initParallax();
+  initClickExplosion();
+  initMouseTrail();
+}
 
-    if (absOffset > 3) {
-      card.style.opacity = '0';
-      card.style.pointerEvents = 'none';
-      return;
+/* ══════════════════════════════════════
+   TYPED.JS — Pesan Romantis
+   ══════════════════════════════════════ */
+function initTyped() {
+  const messages = [
+    'Hai Silvia...',
+    'Dari sekian banyak pertemuan yang terjadi...',
+    'Aku bersyukur pernah mengenalmu.',
+    'Terima kasih telah menjadi bagian dari cerita yang indah.',
+    'Semoga setiap langkahmu selalu dipenuhi kebahagiaan.',
+    'Kamu adalah seseorang yang spesial.',
+    'Dan website sederhana ini dibuat khusus untukmu ❤️'
+  ];
+  if (typeof Typed !== 'undefined') {
+    new Typed('#typed-output', {
+      strings: messages,
+      typeSpeed: 55,
+      backSpeed: 30,
+      backDelay: 2000,
+      showCursor: true,
+      cursorChar: '|',
+      loop: false
+    });
+  } else {
+    // Fallback jika Typed.js gagal load
+    const el = document.getElementById('typed-output');
+    let i = 0, msgIdx = 0;
+    function typeFallback() {
+      if (msgIdx >= messages.length) return;
+      const msg = messages[msgIdx];
+      if (i < msg.length) {
+        el.textContent += msg[i]; i++;
+        setTimeout(typeFallback, 55);
+      } else {
+        i = 0; msgIdx++;
+        if (msgIdx < messages.length) setTimeout(() => { el.textContent = ''; typeFallback(); }, 2000);
+      }
     }
+    typeFallback();
+  }
+}
 
-    card.style.pointerEvents = 'auto';
-    card.classList.toggle('active', i === state.currentIndex);
+/* ══════════════════════════════════════
+   FLOATING HEARTS
+   ══════════════════════════════════════ */
+const heartEmojis = ['❤️','💕','💗','💖','🩷','🤍','✨'];
+let heartCount = 0;
+function startFloatingHearts() {
+  setInterval(() => {
+    if (heartCount > 25) return;
+    createHeart();
+  }, 500);
+}
+function createHeart() {
+  const h = document.createElement('div');
+  h.className = 'floating-heart';
+  h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+  h.style.left = Math.random() * 100 + '%';
+  h.style.bottom = '-30px';
+  h.style.fontSize = (Math.random() * 18 + 10) + 'px';
+  document.getElementById('ar-overlay').appendChild(h);
+  heartCount++;
+  gsap.to(h, {
+    y: -(window.innerHeight + 60),
+    x: (Math.random() - 0.5) * 150,
+    opacity: 0,
+    rotation: (Math.random() - 0.5) * 60,
+    duration: Math.random() * 6 + 6,
+    ease: 'none',
+    onComplete: () => { h.remove(); heartCount--; }
+  });
+}
 
-    const x = offset * spacing;
-    const scale = 1 - absOffset * 0.22;
-    const opacity = 1 - absOffset * 0.3;
-    const blur = absOffset * 2;
+/* ══════════════════════════════════════
+   MOUSE TRAIL HEARTS
+   ══════════════════════════════════════ */
+let trailCount = 0;
+function initMouseTrail() {
+  const ar = document.getElementById('ar-section');
+  ar.addEventListener('mousemove', e => {
+    if (Math.random() > 0.55 || trailCount > 15) return;
+    const h = document.createElement('div');
+    h.className = 'trail-heart';
+    h.textContent = heartEmojis[Math.floor(Math.random() * 4)];
+    h.style.left = e.clientX + 'px';
+    h.style.top = e.clientY + 'px';
+    h.style.fontSize = (Math.random() * 10 + 8) + 'px';
+    document.body.appendChild(h);
+    trailCount++;
+    gsap.to(h, {
+      y: -60 - Math.random() * 40,
+      x: (Math.random() - 0.5) * 50,
+      opacity: 0,
+      scale: 0.3,
+      duration: 1.2,
+      ease: 'power2.out',
+      onComplete: () => { h.remove(); trailCount--; }
+    });
+  });
+}
 
-    gsap.to(card, {
-      x: x,
-      scale: Math.max(0.4, scale),
-      opacity: Math.max(0.1, opacity),
-      filter: `blur(${blur}px)`,
-      duration: 0.5,
+/* ══════════════════════════════════════
+   3D PARALLAX on Photo
+   ══════════════════════════════════════ */
+function initParallax() {
+  const ar = document.getElementById('ar-section');
+  const frame = document.getElementById('photo-frame');
+  ar.addEventListener('mousemove', e => {
+    const rect = ar.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    gsap.to(frame, {
+      rotateY: x * 18,
+      rotateX: -y * 18,
+      duration: 0.6,
       ease: 'power2.out'
     });
   });
+  ar.addEventListener('mouseleave', () => {
+    gsap.to(frame, { rotateY: 0, rotateX: 0, duration: 0.8, ease: 'power2.out' });
+  });
+  // Touch support
+  ar.addEventListener('touchmove', e => {
+    const t = e.touches[0];
+    const rect = ar.getBoundingClientRect();
+    const x = (t.clientX - rect.left) / rect.width - 0.5;
+    const y = (t.clientY - rect.top) / rect.height - 0.5;
+    gsap.to(frame, { rotateY: x * 12, rotateX: -y * 12, duration: 0.4, ease: 'power2.out' });
+  }, { passive: true });
 }
 
-/* ================================================================
-   VISUALIZER ANIMASI
-   ================================================================ */
-function updateVisualizer() {
-  if (!state.isPlaying) return;
-  const bars = dom.visualizer.querySelectorAll('.vis-bar');
-  const time = performance.now() * 0.003;
-  bars.forEach((bar, i) => {
-    const h = 4 + Math.abs(Math.sin(time + i * 0.5)) * 22 + Math.random() * 6;
-    bar.style.height = h + 'px';
-    bar.style.opacity = (0.4 + (h / 32) * 0.6).toFixed(2);
+/* ══════════════════════════════════════
+   CLICK EXPLOSION on Photo
+   ══════════════════════════════════════ */
+function initClickExplosion() {
+  document.getElementById('photo-wrapper').addEventListener('click', e => {
+    e.stopPropagation();
+    const count = 22;
+    for (let i = 0; i < count; i++) {
+      const h = document.createElement('div');
+      h.className = 'explosion-heart';
+      h.textContent = '❤️';
+      h.style.left = e.clientX + 'px';
+      h.style.top = e.clientY + 'px';
+      h.style.fontSize = (Math.random() * 22 + 12) + 'px';
+      document.body.appendChild(h);
+      const angle = (Math.PI * 2 / count) * i + (Math.random() - 0.5) * 0.5;
+      const dist = 100 + Math.random() * 160;
+      gsap.to(h, {
+        x: Math.cos(angle) * dist,
+        y: Math.sin(angle) * dist - 40,
+        opacity: 0,
+        scale: 0.2,
+        rotation: (Math.random() - 0.5) * 180,
+        duration: 0.9 + Math.random() * 0.5,
+        ease: 'power3.out',
+        onComplete: () => h.remove()
+      });
+    }
+    showToast("You're Amazing ❤️");
   });
 }
 
-/* ================================================================
-   PROGRESS BAR UPDATE
-   ================================================================ */
-function updateProgress() {
-  if (state.isPlaying && state.howl) {
-    state.currentTime = state.howl.seek() || 0;
-  }
-  if (state.duration > 0) {
-    const pct = (state.currentTime / state.duration) * 100;
-    dom.progressFill.style.width = pct + '%';
-    dom.timeCurrent.textContent = formatTime(state.currentTime);
-  }
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  gsap.fromTo(t, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(2)' });
+  gsap.to(t, { scale: 1.05, opacity: 0, duration: 0.5, delay: 2, ease: 'power2.in', onComplete: () => t.remove() });
 }
 
-/* ================================================================
-   HUD UPDATE
-   ================================================================ */
-function updateHUDTime() {
+/* ══════════════════════════════════════
+   COUNTDOWN (Count Up)
+   ══════════════════════════════════════ */
+function updateCountup() {
   const now = new Date();
-  const h = String(now.getHours()).padStart(2, '0');
-  const m = String(now.getMinutes()).padStart(2, '0');
-  const s = String(now.getSeconds()).padStart(2, '0');
-  dom.hudTime.textContent = `${h}:${m}:${s}`;
+  let diff = now - FIRST_MET_DATE;
+  if (diff < 0) diff = 0;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cd-days').textContent = String(d).padStart(3, '0');
+  document.getElementById('cd-hours').textContent = String(h).padStart(2, '0');
+  document.getElementById('cd-mins').textContent = String(m).padStart(2, '0');
+  document.getElementById('cd-secs').textContent = String(s).padStart(2, '0');
 }
+updateCountup();
+setInterval(updateCountup, 1000);
 
-function updateFPS() {
-  state.frameCount++;
-  const now = performance.now();
-  if (now - state.lastFpsTime >= 1000) {
-    state.fps = state.frameCount;
-    state.frameCount = 0;
-    state.lastFpsTime = now;
-    dom.fpsCounter.textContent = state.fps;
+/* ══════════════════════════════════════
+   GALLERY CAROUSEL
+   ══════════════════════════════════════ */
+let currentSlide = 0;
+let totalSlides = 0;
+let autoSlideInterval = null;
+
+function initCarousel() {
+  const track = document.getElementById('carousel-track');
+  totalSlides = track.children.length;
+  const dotsContainer = document.getElementById('carousel-dots');
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+    dot.addEventListener('click', () => goToSlide(i));
+    dotsContainer.appendChild(dot);
   }
+  startAutoSlide();
 }
 
-function updateTrackingStatus() {
-  if (state.handDetected) {
-    dom.hudTracking.classList.add('active');
-    dom.trackingText.textContent = 'HAND LOCKED';
-    dom.handPrompt.style.opacity = '0';
-  } else {
-    dom.hudTracking.classList.remove('active');
-    dom.trackingText.textContent = 'NO HAND';
-    state.noHandTimer += 16;
-    if (state.noHandTimer > NO_HAND_SHOW_DELAY && state.mediapipeReady) {
-      dom.handPrompt.style.opacity = '1';
-    } else {
-      dom.handPrompt.style.opacity = '0';
+function goToSlide(idx) {
+  currentSlide = ((idx % totalSlides) + totalSlides) % totalSlides;
+  document.getElementById('carousel-track').style.transform = `translateX(-${currentSlide * 100}%)`;
+  document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+}
+
+function moveCarousel(dir) {
+  goToSlide(currentSlide + dir);
+  resetAutoSlide();
+}
+
+function startAutoSlide() { autoSlideInterval = setInterval(() => goToSlide(currentSlide + 1), 4000); }
+function resetAutoSlide() { clearInterval(autoSlideInterval); startAutoSlide(); }
+initCarousel();
+
+/* ══════════════════════════════════════
+   LETTER MODAL
+   ══════════════════════════════════════ */
+function openLetter() {
+  document.getElementById('letter-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLetter() {
+  document.getElementById('letter-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeLetterOutside(e) { if (e.target === document.getElementById('letter-modal')) closeLetter(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLetter(); });
+
+/* ══════════════════════════════════════
+   ENDING STARS CANVAS
+   ══════════════════════════════════════ */
+function initStarsCanvas() {
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resize() {
+    canvas.width = canvas.parentElement.offsetWidth;
+    canvas.height = canvas.parentElement.offsetHeight;
+    stars = [];
+    for (let i = 0; i < 200; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.8 + 0.3,
+        baseAlpha: Math.random() * 0.6 + 0.2,
+        phase: Math.random() * Math.PI * 2,
+        speed: Math.random() * 0.02 + 0.005
+      });
     }
   }
-}
-
-/* ================================================================
-   MAIN LOOP
-   ================================================================ */
-function mainLoop() {
-  updateFPS();
-  updateProgress();
-  updateVisualizer();
-  updateTrackingStatus();
-  requestAnimationFrame(mainLoop);
-}
-
-/* ================================================================
-   EVENT LISTENERS
-   ================================================================ */
-dom.btnPlay.addEventListener('click', togglePlay);
-dom.btnNext.addEventListener('click', nextSong);
-dom.btnPrev.addEventListener('click', prevSong);
-
-dom.progressTrack.addEventListener('click', e => {
-  const rect = dom.progressTrack.getBoundingClientRect();
-  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  seekTo(ratio);
-});
-
-dom.btnInstructions.addEventListener('click', () => {
-  state.instructionsOpen = !state.instructionsOpen;
-  if (state.instructionsOpen) {
-    dom.instructions.style.display = 'block';
-    gsap.fromTo(dom.instructions, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 });
-  } else {
-    gsap.to(dom.instructions, {
-      opacity: 0, y: 10, duration: 0.2,
-      onComplete: () => { dom.instructions.style.display = 'none'; }
+  resize();
+  window.addEventListener('resize', resize);
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    frame++;
+    stars.forEach(s => {
+      const alpha = s.baseAlpha + Math.sin(frame * s.speed + s.phase) * 0.3;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, Math.max(0.1, s.r), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(240,230,255,${Math.max(0, Math.min(1, alpha))})`;
+      ctx.fill();
     });
+    requestAnimationFrame(draw);
   }
-});
+  draw();
+}
+initStarsCanvas();
 
-// Keyboard controls
-document.addEventListener('keydown', e => {
-  switch(e.code) {
-    case 'Space': e.preventDefault(); togglePlay(); break;
-    case 'ArrowRight': nextSong(); break;
-    case 'ArrowLeft': prevSong(); break;
+/* ══════════════════════════════════════
+   MUSIC PLAYER
+   ══════════════════════════════════════ */
+const audio = new Audio(MUSIC_URL);
+audio.loop = true;
+audio.volume = 0.4;
+audio.preload = 'auto';
+let musicPlaying = false;
+
+function toggleMusic() {
+  if (musicPlaying) {
+    audio.pause();
+    document.getElementById('music-icon').className = 'fas fa-play';
+  } else {
+    audio.play().catch(() => {});
+    document.getElementById('music-icon').className = 'fas fa-pause';
   }
-});
+  musicPlaying = !musicPlaying;
+}
+function setVolume(v) { audio.volume = v / 100; }
 
-// Resize handler untuk canvas dan carousel
-window.addEventListener('resize', () => {
-  if (state.cameraReady) {
-    dom.canvas.width = dom.webcam.videoWidth;
-    dom.canvas.height = dom.webcam.videoHeight;
-  }
-  updateCarousel();
-});
-
-// Touch/swipe pada carousel untuk mobile
-let touchStartX = 0;
-let touchStartY = 0;
-dom.carouselTrack.addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-}, { passive: true });
-dom.carouselTrack.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
-  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-    if (dx < 0) nextSong();
-    else prevSong();
-  }
-}, { passive: true });
-
-/* ================================================================
-   MULAI APLIKASI
-   ================================================================ */
-init();
+/* ══════════════════════════════════════
+   SCROLL REVEAL (IntersectionObserver)
+   ══════════════════════════════════════ */
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 </script>
 </body>
 </html>
