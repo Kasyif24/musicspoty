@@ -1,2451 +1,701 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS // AR MUSIC SYSTEM</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js" crossorigin="anonymous"></script>
-<style>
-  :root {
-    --neon: #00ff88;
-    --cyan: #00ccff;
-    --hot: #ff0055;
-    --amber: #ffaa00;
-    --bg: #050508;
-    --card-bg: rgba(0, 255, 136, 0.04);
-    --card-border: rgba(0, 255, 136, 0.18);
-    --text: #d0ffe0;
-    --muted: rgba(0, 255, 136, 0.4);
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); font-family: 'Share Tech Mono', monospace; color: var(--text); overflow: hidden; height: 100vh; width: 100vw; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surprise For Silvia Tri Cahyani ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: { 'playfair': ['Playfair Display','serif'], 'quicksand': ['Quicksand','sans-serif'] },
+                colors: { 'pk50':'#FFF0F5','pk100':'#FCE4EC','pk200':'#F8BBD0','pk300':'#F48FB1','pk400':'#F06292','pk500':'#EC407A','pk600':'#E91E63','pk700':'#C2185B','crm':'#FFF8E7','crml':'#FFFDF5','gld':'#C9A96E','gldl':'#D4B896','gldd':'#A68B5B','txtp':'#4A2C3D','txts':'#8B6B7B','txtl':'#B899A8','bgsoft':'#FFF5F8' }
+            }
+        }
+    }
+    </script>
+    <style>
+        :root{--pink-50:#FFF0F5;--pink-200:#F8BBD0;--pink-300:#F48FB1;--pink-500:#EC407A;--pink-700:#C2185B;--cream:#FFF8E7;--cream-light:#FFFDF5;--gold:#C9A96E;--gold-light:#D4B896;--text-primary:#4A2C3D;--text-secondary:#8B6B7B}
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
+        body{font-family:'Quicksand',sans-serif;color:var(--text-primary);overflow-x:hidden;background:var(--cream-light)}
+        ::selection{background:var(--pink-200);color:var(--text-primary)}
+        ::-webkit-scrollbar{width:6px}
+        ::-webkit-scrollbar-track{background:var(--pink-50)}
+        ::-webkit-scrollbar-thumb{background:var(--pink-300);border-radius:3px}
 
-  /* Scanlines */
-  #scanlines {
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 255, 136, 0.015) 2px,
-      rgba(0, 255, 136, 0.015) 4px
-    );
-    z-index: 6;
-  }
+        /* Loading Screen */
+        #loading{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#FFF0F5,#FCE4EC,#FFF8E7);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease,visibility .8s ease}
+        #loading.hidden{opacity:0;visibility:hidden}
+        .load-heart{font-size:4rem;animation:heartPulse 1s ease-in-out infinite}
+        @keyframes heartPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+        .load-bar{width:200px;height:3px;background:var(--pink-200);border-radius:2px;overflow:hidden;margin-top:20px}
+        .load-bar-inner{height:100%;width:0;background:linear-gradient(90deg,var(--pink-300),var(--pink-500));border-radius:2px;transition:width .3s ease}
 
-  /* Start overlay */
-  #startOverlay {
-    position: fixed; inset: 0; z-index: 100;
-    background: radial-gradient(ellipse at center, rgba(0,255,136,0.03) 0%, var(--bg) 70%);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    cursor: pointer; transition: opacity 0.6s ease;
-  }
-  #startOverlay .ring {
-    width: 180px; height: 180px; border-radius: 50%;
-    border: 2px solid var(--neon); position: relative;
-    animation: pulseRing 2s ease-in-out infinite;
-  }
-  #startOverlay .ring::before {
-    content: ''; position: absolute; inset: 12px; border-radius: 50%;
-    border: 1px solid rgba(0,255,136,0.3);
-    animation: pulseRing 2s ease-in-out infinite 0.3s;
-  }
-  #startOverlay .ring::after {
-    content: ''; position: absolute; inset: 28px; border-radius: 50%;
-    border: 1px solid rgba(0,255,136,0.15);
-    animation: pulseRing 2s ease-in-out infinite 0.6s;
-  }
-  @keyframes pulseRing {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.08); opacity: 0.6; }
-  }
-  #startOverlay h1 {
-    font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 3.5rem;
-    letter-spacing: 0.3em; color: var(--neon); margin-top: 2rem;
-    text-shadow: 0 0 40px rgba(0,255,136,0.5), 0 0 80px rgba(0,255,136,0.2);
-  }
-  #startOverlay .sub {
-    font-size: 0.85rem; color: var(--muted); letter-spacing: 0.5em; margin-top: 0.5rem;
-  }
-  #startOverlay .tap {
-    margin-top: 3rem; font-size: 0.75rem; letter-spacing: 0.4em;
-    color: var(--neon); animation: blink 1.2s ease-in-out infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+        /* Cursor Glow */
+        #cursor-glow{position:fixed;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(244,143,177,.15) 0%,transparent 70%);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .15s ease,top .15s ease}
 
-  /* Boot terminal */
-  #bootTerminal {
-    position: fixed; inset: 0; z-index: 99; background: var(--bg);
-    display: none; flex-direction: column; justify-content: center;
-    padding: 10%; font-size: 0.85rem; line-height: 2;
-  }
-  #bootTerminal .line { opacity: 0; }
-  #bootTerminal .ok { color: var(--neon); }
-  #bootTerminal .fail { color: var(--hot); }
+        /* Particles Canvas */
+        #particles{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-  /* HUD elements */
-  .hud-label {
-    font-size: 0.6rem; letter-spacing: 0.25em; color: var(--muted);
-    text-transform: uppercase;
-  }
-  .hud-value {
-    font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--neon);
-  }
-  .hud-corner {
-    position: absolute; width: 24px; height: 24px;
-  }
-  .hud-corner--tl { top: 0; left: 0; border-top: 2px solid var(--neon); border-left: 2px solid var(--neon); }
-  .hud-corner--tr { top: 0; right: 0; border-top: 2px solid var(--neon); border-right: 2px solid var(--neon); }
-  .hud-corner--bl { bottom: 0; left: 0; border-bottom: 2px solid var(--neon); border-left: 2px solid var(--neon); }
-  .hud-corner--br { bottom: 0; right: 0; border-bottom: 2px solid var(--neon); border-right: 2px solid var(--neon); }
+        /* Floating Hearts */
+        .floating-heart{position:fixed;z-index:1;pointer-events:none;font-size:1.2rem;opacity:0;animation:floatUp linear infinite}
+        @keyframes floatUp{0%{opacity:0;transform:translateY(100vh) rotate(0deg) scale(.5)}10%{opacity:.7}90%{opacity:.5}100%{opacity:0;transform:translateY(-10vh) rotate(45deg) scale(1)}}
 
-  /* Music cards */
-  .music-card {
-    position: absolute; width: 260px; height: 320px;
-    background: var(--card-bg);
-    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--card-border);
-    border-radius: 16px; padding: 16px;
-    box-shadow: 0 0 40px rgba(0,255,136,0.06), inset 0 1px 0 rgba(0,255,136,0.1);
-    transition: box-shadow 0.4s ease;
-    will-change: transform, opacity;
-  }
-  .music-card.active {
-    box-shadow: 0 0 60px rgba(0,255,136,0.15), inset 0 1px 0 rgba(0,255,136,0.2), 0 0 120px rgba(0,255,136,0.05);
-    border-color: rgba(0,255,136,0.35);
-  }
-  .music-card .cover {
-    width: 100%; height: 160px; border-radius: 10px; object-fit: cover;
-    border: 1px solid rgba(0,255,136,0.1);
-  }
-  .music-card .title {
-    font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 0.85rem;
-    color: #fff; margin-top: 12px; letter-spacing: 0.05em;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .music-card .artist {
-    font-size: 0.7rem; color: var(--muted); margin-top: 4px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .music-card .meta {
-    display: flex; justify-content: space-between; align-items: center; margin-top: 12px;
-  }
-  .music-card .bpm-tag {
-    font-size: 0.6rem; padding: 2px 8px; border-radius: 4px;
-    border: 1px solid rgba(0,255,136,0.2); color: var(--neon);
-    background: rgba(0,255,136,0.05);
-  }
-  .music-card .dur {
-    font-size: 0.65rem; color: var(--muted);
-  }
+        /* Sparkle */
+        .sparkle{position:fixed;z-index:1;pointer-events:none;width:6px;height:6px;background:var(--gold);border-radius:50%;animation:sparkleAnim 2s ease-in-out infinite}
+        @keyframes sparkleAnim{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
 
-  /* Progress bar */
-  #progressBar {
-    position: absolute; bottom: 0; left: 16px; right: 16px; height: 3px;
-    background: rgba(0,255,136,0.1); border-radius: 2px; overflow: hidden;
-  }
-  #progressFill {
-    height: 100%; width: 0%; border-radius: 2px;
-    background: linear-gradient(90deg, var(--neon), var(--cyan));
-    box-shadow: 0 0 8px var(--neon);
-    transition: width 0.3s linear;
-  }
+        /* Hero */
+        #hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;z-index:2}
+        .hero-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,5vw,3rem);font-weight:600;color:var(--text-primary);margin-bottom:1.5rem;opacity:0;animation:fadeUp 1s ease forwards .3s}
+        .typing-container{min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem}
+        .typing-line{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,3vw,1.6rem);color:var(--text-secondary);min-height:1.8em}
+        .typing-cursor{display:inline-block;width:2px;height:1.2em;background:var(--pink-500);margin-left:2px;animation:blink .7s step-end infinite;vertical-align:text-bottom}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+        .hero-btn{margin-top:2.5rem;padding:16px 40px;background:linear-gradient(135deg,var(--pink-500),var(--pink-700));color:#fff;border:none;border-radius:50px;font-family:'Quicksand',sans-serif;font-size:1.1rem;font-weight:600;cursor:pointer;opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease,box-shadow .3s ease;box-shadow:0 4px 20px rgba(236,64,122,.3)}
+        .hero-btn:hover{box-shadow:0 8px 30px rgba(236,64,122,.5);transform:translateY(-2px)}
+        .hero-btn.show{opacity:1;transform:translateY(0)}
 
-  /* Visualizer bars */
-  .viz-bar {
-    width: 3px; background: var(--neon); border-radius: 2px;
-    box-shadow: 0 0 6px rgba(0,255,136,0.5);
-    transition: height 0.05s linear;
-    min-height: 2px;
-  }
+        /* Confetti */
+        .confetti-piece{position:fixed;z-index:9997;pointer-events:none;animation:confettiFall linear forwards}
+        @keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotateZ(0deg)}100%{opacity:0;transform:translateY(100vh) rotateZ(720deg)}}
 
-  /* Gesture notification */
-  #gestureNotify {
-    font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.4rem;
-    color: var(--neon); letter-spacing: 0.2em;
-    text-shadow: 0 0 30px rgba(0,255,136,0.8), 0 0 60px rgba(0,255,136,0.3);
-    opacity: 0; pointer-events: none;
-  }
+        /* Gift Section */
+        #gift{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;position:relative;z-index:2}
+        .gift-wrapper{position:relative;width:220px;height:240px;margin-bottom:2rem}
+        .gift-body{position:absolute;bottom:0;left:20px;width:180px;height:140px;background:linear-gradient(135deg,var(--pink-500),var(--pink-700));border-radius:8px;box-shadow:0 8px 30px rgba(194,24,91,.3);overflow:hidden}
+        .gift-body::before{content:'';position:absolute;left:50%;transform:translateX(-50%);width:30px;height:100%;background:linear-gradient(90deg,var(--gold-light),var(--gold),var(--gold-light))}
+        .gift-body::after{content:'';position:absolute;top:50%;transform:translateY(-50%);width:100%;height:30px;background:linear-gradient(180deg,var(--gold-light),var(--gold),var(--gold-light))}
+        .gift-lid{position:absolute;top:0;left:10px;width:200px;height:40px;background:linear-gradient(135deg,var(--pink-300),var(--pink-500));border-radius:8px;box-shadow:0 4px 15px rgba(236,64,122,.2);transition:transform 1s cubic-bezier(.68,-.55,.27,1.55),opacity .8s ease;z-index:2}
+        .gift-lid::before{content:'';position:absolute;left:50%;transform:translateX(-50%);width:30px;height:100%;background:linear-gradient(90deg,var(--gold-light),var(--gold),var(--gold-light))}
+        .gift-bow{position:absolute;top:-20px;left:50%;transform:translateX(-50%);z-index:3;transition:transform 1s cubic-bezier(.68,-.55,.27,1.55),opacity .8s ease}
+        .gift-bow-left,.gift-bow-right{position:absolute;width:35px;height:25px;background:var(--gold);border-radius:50% 50% 0 50%;top:0}
+        .gift-bow-left{left:-30px;transform:rotate(-30deg)}
+        .gift-bow-right{right:-30px;transform:rotate(30deg) scaleX(-1)}
+        .gift-bow-center{width:16px;height:16px;background:var(--gold-dark);border-radius:50%;position:absolute;left:50%;top:8px;transform:translateX(-50%)}
+        .gift-wrapper.opened .gift-lid{transform:translateY(-100px) rotateZ(-20deg);opacity:0}
+        .gift-wrapper.opened .gift-bow{transform:translateX(-50%) translateY(-100px) rotateZ(-20deg);opacity:0}
+        .gift-wrapper.opened .gift-body{animation:giftBodyFade .8s ease .5s forwards}
+        @keyframes giftBodyFade{to{opacity:0;transform:scale(.8)}}
 
-  /* Gesture guide */
-  .gesture-icon {
-    width: 44px; height: 44px; border-radius: 50%;
-    border: 1px solid rgba(0,255,136,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem; color: var(--muted);
-    background: rgba(0,255,136,0.03);
-    transition: all 0.3s ease;
-  }
-  .gesture-icon.active {
-    border-color: var(--neon); color: var(--neon);
-    box-shadow: 0 0 20px rgba(0,255,136,0.3);
-    background: rgba(0,255,136,0.08);
-  }
-  .gesture-label {
-    font-size: 0.5rem; color: var(--muted); letter-spacing: 0.15em;
-    margin-top: 4px; text-align: center;
-  }
+        .photo-reveal{position:relative;opacity:0;transform:scale(.5);transition:opacity 1s ease 1.2s,transform 1s cubic-bezier(.68,-.55,.27,1.55) 1.2s;pointer-events:none}
+        .photo-reveal.show{opacity:1;transform:scale(1);pointer-events:auto}
+        .photo-frame{padding:12px;background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-light),var(--gold-light),var(--gold));border-radius:12px;box-shadow:0 15px 40px rgba(201,169,110,.3),0 0 0 4px var(--cream-light),0 0 0 8px rgba(201,169,110,.2)}
+        .photo-frame img{display:block;width:280px;height:280px;object-fit:cover;border-radius:6px}
+        .gift-text{text-align:center;opacity:0;transform:translateY(20px);transition:opacity .8s ease 2s,transform .8s ease 2s}
+        .gift-text.show{opacity:1;transform:translateY(0)}
 
-  /* HUD arcs SVG */
-  #hudArcs {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none; z-index: 4;
-  }
+        /* Reveal on Scroll */
+        .reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+        .reveal.revealed{opacity:1;transform:translateY(0)}
+        .reveal-delay-1{transition-delay:.15s}
+        .reveal-delay-2{transition-delay:.3s}
+        .reveal-delay-3{transition-delay:.45s}
+        .reveal-delay-4{transition-delay:.6s}
 
-  /* Status dot */
-  .status-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--neon); box-shadow: 0 0 8px var(--neon);
-    animation: dotPulse 1.5s ease-in-out infinite;
-  }
-  .status-dot.inactive { background: #333; box-shadow: none; animation: none; }
-  @keyframes dotPulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+        /* Timeline */
+        .timeline{position:relative;max-width:800px;margin:0 auto}
+        .timeline::before{content:'';position:absolute;left:50%;transform:translateX(-50%);width:2px;height:100%;background:linear-gradient(to bottom,var(--pink-200),var(--gold),var(--pink-200))}
+        .timeline-item{position:relative;width:50%;padding:20px 40px}
+        .timeline-item:nth-child(odd){left:0;text-align:right}
+        .timeline-item:nth-child(even){left:50%;text-align:left}
+        .timeline-dot{position:absolute;top:28px;width:16px;height:16px;background:var(--pink-500);border:3px solid var(--cream-light);border-radius:50%;z-index:2;box-shadow:0 0 0 4px var(--pink-200)}
+        .timeline-item:nth-child(odd) .timeline-dot{right:-8px}
+        .timeline-item:nth-child(even) .timeline-dot{left:-8px}
+        .timeline-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 20px rgba(244,143,177,.1);border:1px solid var(--pink-200);transition:transform .3s ease,box-shadow .3s ease}
+        .timeline-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(244,143,177,.2)}
+        @media(max-width:768px){
+            .timeline::before{left:20px}
+            .timeline-item{width:100%;left:0!important;text-align:left!important;padding-left:50px;padding-right:16px}
+            .timeline-dot{left:12px!important;right:auto!important}
+        }
 
-  /* Now playing info */
-  #nowPlaying {
-    opacity: 0; transform: translateY(10px);
-  }
+        /* Gallery */
+        .gallery-grid{columns:3;column-gap:16px}
+        .gallery-item{break-inside:avoid;margin-bottom:16px;border-radius:12px;overflow:hidden;cursor:pointer;position:relative}
+        .gallery-item img{width:100%;display:block;transition:transform .5s ease}
+        .gallery-item:hover img{transform:scale(1.08)}
+        .gallery-item::after{content:'👁️';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(236,64,122,.2);opacity:0;transition:opacity .3s ease;font-size:2rem}
+        .gallery-item:hover::after{opacity:1}
+        @media(max-width:768px){.gallery-grid{columns:2}}
+        @media(max-width:480px){.gallery-grid{columns:1}}
 
-  @media (max-width: 768px) {
-    .music-card { width: 200px; height: 260px; padding: 12px; }
-    .music-card .cover { height: 120px; }
-    .music-card .title { font-size: 0.7rem; }
-    #startOverlay h1 { font-size: 2rem; }
-  }
+        /* Lightbox */
+        #lightbox{position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:2rem;cursor:pointer}
+        #lightbox.active{display:flex}
+        #lightbox img{max-width:90vw;max-height:85vh;border-radius:12px;box-shadow:0 0 60px rgba(244,143,177,.3)}
+        .lightbox-close{position:absolute;top:20px;right:20px;color:#fff;font-size:2rem;cursor:pointer;z-index:9991;transition:transform .3s ease}
+        .lightbox-close:hover{transform:rotate(90deg)}
 
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-  }
-</style>
+        /* Letter */
+        .letter-paper{background:var(--cream-light);background-image:linear-gradient(rgba(201,169,110,.08) 1px,transparent 1px);background-size:100% 32px;border:1px solid rgba(201,169,110,.25);box-shadow:0 8px 40px rgba(0,0,0,.06),inset 0 0 80px rgba(201,169,110,.03);padding:48px 40px;position:relative;border-radius:4px}
+        .letter-paper::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--pink-200),var(--gold),var(--pink-200))}
+        @media(max-width:640px){.letter-paper{padding:32px 20px}}
+
+        /* Special Cards */
+        .special-card{background:#fff;border-radius:16px;padding:28px;text-align:center;border:1px solid var(--pink-200);box-shadow:0 4px 20px rgba(244,143,177,.08);transition:transform .4s cubic-bezier(.68,-.55,.27,1.55),box-shadow .3s ease}
+        .special-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 12px 40px rgba(244,143,177,.2)}
+        .special-icon{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.5rem}
+
+        /* Countdown */
+        .countdown-box{background:#fff;border-radius:16px;padding:24px 16px;text-align:center;border:2px solid var(--pink-200);box-shadow:0 4px 20px rgba(244,143,177,.1);min-width:90px}
+        .countdown-num{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--pink-500);line-height:1}
+        .countdown-label{font-size:.8rem;color:var(--text-secondary);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+
+        /* Ending */
+        #ending{position:relative;overflow:hidden;background:linear-gradient(135deg,#1a0a12,#2d1020,#1a0a12)}
+        .ending-star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;animation:twinkle 3s ease-in-out infinite}
+        @keyframes twinkle{0%,100%{opacity:.2;transform:scale(.5)}50%{opacity:1;transform:scale(1.2)}}
+        .ending-btn{padding:16px 40px;background:linear-gradient(135deg,var(--pink-500),var(--pink-700));color:#fff;border:2px solid var(--gold-light);border-radius:50px;font-family:'Quicksand',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s ease}
+        .ending-btn:hover{box-shadow:0 0 30px rgba(236,64,122,.5);transform:scale(1.05);border-color:var(--gold)}
+
+        /* Music Player */
+        #music-player{position:fixed;bottom:20px;right:20px;z-index:9995;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:16px;padding:14px 18px;box-shadow:0 8px 30px rgba(0,0,0,.1);border:1px solid var(--pink-200);display:flex;align-items:center;gap:12px;transition:transform .3s ease,opacity .3s ease;max-width:260px}
+        #music-player:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(244,143,177,.2)}
+        .music-btn{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--pink-500),var(--pink-700));color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;transition:transform .2s ease}
+        .music-btn:hover{transform:scale(1.1)}
+        .volume-slider{-webkit-appearance:none;width:80px;height:4px;border-radius:2px;background:var(--pink-200);outline:none;cursor:pointer}
+        .volume-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--pink-500);cursor:pointer}
+
+        /* Fade Up */
+        @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+        /* Reduced Motion */
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.floating-heart,.sparkle,.ending-star{display:none}}
+    </style>
 </head>
 <body>
-
-<!-- Start Overlay -->
-<div id="startOverlay" role="button" aria-label="Click to activate AR Music System" tabindex="0">
-  <div class="ring"></div>
-  <h1>NEXUS</h1>
-  <div class="sub">AR MUSIC SYSTEM v2.0</div>
-  <div class="tap">[ TAP TO ACTIVATE ]</div>
-</div>
-
-<!-- Boot Terminal -->
-<div id="bootTerminal" aria-live="polite"></div>
-
-<!-- Webcam Video -->
-<video id="webcam" autoplay playsinline style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);z-index:0;opacity:0.85;"></video>
-
-<!-- Dark overlay -->
-<div style="position:fixed;inset:0;background:rgba(5,5,8,0.5);z-index:1;"></div>
-
-<!-- Three.js Canvas -->
-<canvas id="threeCanvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:2;"></canvas>
-
-<!-- Hand Tracking Canvas -->
-<canvas id="handCanvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:3;transform:scaleX(-1);"></canvas>
-
-<!-- Scanlines -->
-<div id="scanlines" style="position:fixed;inset:0;pointer-events:none;z-index:6;"></div>
-
-<!-- HUD Arcs -->
-<svg id="hudArcs" width="460" height="460" viewBox="0 0 460 460">
-  <circle cx="230" cy="230" r="210" fill="none" stroke="rgba(0,255,136,0.08)" stroke-width="1" stroke-dasharray="4 8"/>
-  <circle cx="230" cy="230" r="220" fill="none" stroke="rgba(0,255,136,0.04)" stroke-width="0.5" stroke-dasharray="2 12"/>
-  <circle id="progressArc" cx="230" cy="230" r="210" fill="none" stroke="rgba(0,255,136,0.5)" stroke-width="2" stroke-dasharray="0 1320" stroke-linecap="round" transform="rotate(-90 230 230)" style="filter:drop-shadow(0 0 6px rgba(0,255,136,0.6));transition:stroke-dasharray 0.3s linear;"/>
-  <!-- Corner markers -->
-  <line x1="60" y1="60" x2="90" y2="60" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="60" y1="60" x2="60" y2="90" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="400" y1="60" x2="370" y2="60" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="400" y1="60" x2="400" y2="90" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="60" y1="400" x2="90" y2="400" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="60" y1="400" x2="60" y2="370" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="400" y1="400" x2="370" y2="400" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="400" y1="400" x2="400" y2="370" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-</svg>
-
-<!-- UI Overlay -->
-<div id="uiOverlay" style="position:fixed;inset:0;z-index:5;pointer-events:none;">
-
-  <!-- Top Left: System Info -->
-  <div style="position:absolute;top:24px;left:24px;">
-    <div class="hud-label">System</div>
-    <div class="hud-value" style="font-size:0.95rem;letter-spacing:0.15em;">NEXUS</div>
-    <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
-      <div class="status-dot inactive" id="statusDot"></div>
-      <span class="hud-label" id="statusText" style="color:rgba(0,255,136,0.3);">STANDBY</span>
+    <!-- Loading Screen -->
+    <div id="loading">
+        <div class="load-heart">💝</div>
+        <p class="font-quicksand text-txtp mt-4 text-sm tracking-widest uppercase">Memuat Kejutan...</p>
+        <div class="load-bar"><div class="load-bar-inner" id="load-bar-inner"></div></div>
     </div>
-  </div>
 
-  <!-- Top Right: Telemetry -->
-  <div style="position:absolute;top:24px;right:24px;text-align:right;">
-    <div class="hud-label">FPS</div>
-    <div class="hud-value" id="fpsDisplay">--</div>
-    <div class="hud-label" style="margin-top:8px;">HANDS</div>
-    <div class="hud-value" id="handCount">0</div>
-  </div>
+    <!-- Cursor Glow -->
+    <div id="cursor-glow"></div>
 
-  <!-- Center: Card Carousel -->
-  <div id="cardCarousel" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);perspective:1200px;width:260px;height:320px;">
-  </div>
+    <!-- Particles -->
+    <canvas id="particles"></canvas>
 
-  <!-- Gesture Notification -->
-  <div id="gestureNotify" style="position:absolute;top:calc(50% - 220px);left:50%;transform:translateX(-50%);"></div>
+    <!-- Floating Hearts Container -->
+    <div id="hearts-container"></div>
 
-  <!-- Bottom Left: Now Playing -->
-  <div id="nowPlaying" style="position:absolute;bottom:90px;left:24px;">
-    <div class="hud-label">NOW PLAYING</div>
-    <div id="npTitle" style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:0.9rem;color:#fff;margin-top:4px;">--</div>
-    <div id="npArtist" style="font-size:0.7rem;color:var(--muted);margin-top:2px;">--</div>
-    <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-      <i class="fas fa-signal" style="font-size:0.6rem;color:var(--neon);"></i>
-      <div id="vizContainer" style="display:flex;align-items:flex-end;gap:2px;height:20px;"></div>
+    <!-- Sparkle Container -->
+    <div id="sparkle-container"></div>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <h1 class="hero-title">A Special Surprise For Someone Special ❤️</h1>
+        <div class="typing-container">
+            <div class="typing-line" id="typing-1"></div>
+            <div class="typing-line" id="typing-2"></div>
+        </div>
+        <button class="hero-btn" id="open-btn" onclick="openGift()">Buka Kejutan 🎁</button>
+    </section>
+
+    <!-- Gift Section -->
+    <section id="gift" class="bg-gradient-to-b from-pk50 to-crml">
+        <div class="gift-wrapper" id="gift-box">
+            <div class="gift-bow">
+                <div class="gift-bow-left"></div>
+                <div class="gift-bow-right"></div>
+                <div class="gift-bow-center"></div>
+            </div>
+            <div class="gift-lid"></div>
+            <div class="gift-body"></div>
+        </div>
+        <div class="photo-reveal" id="photo-reveal">
+            <div class="photo-frame">
+                <img src="https://picsum.photos/seed/silvia-special-love/600/600.jpg" alt="Silvia Tri Cahyani" loading="lazy">
+            </div>
+        </div>
+        <div class="gift-text mt-8 px-4" id="gift-text">
+            <h2 class="font-playfair text-2xl md:text-3xl font-semibold text-txtp mb-4">Hai Silvia Tri Cahyani ❤️</h2>
+            <p class="font-quicksand text-txts max-w-lg mx-auto leading-relaxed">Mungkin website sederhana ini tidak seindah dirimu, tetapi setiap baris yang ada di sini dibuat dengan penuh ketulusan.</p>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section id="timeline" class="py-24 px-4 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="font-playfair text-3xl md:text-4xl font-semibold text-center text-txtp mb-4 reveal">Perjalanan Cerita Kita ✨</h2>
+            <p class="text-center text-txts mb-16 reveal reveal-delay-1">Setiap momen memiliki makna yang mendalam</p>
+            <div class="timeline">
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="text-pk500 font-bold text-sm mb-2">🕐 Awal Semua</div>
+                        <h3 class="font-playfair text-lg font-semibold mb-2">Pertama Kali Bertemu</h3>
+                        <p class="text-txts text-sm leading-relaxed">Pertemuan yang tak terduga, namun meninggalkan kesan yang tak terlupakan. Senyummu saat itu menjadi awal dari segalanya.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="text-pk500 font-bold text-sm mb-2">💬 Memulai Dialog</div>
+                        <h3 class="font-playfair text-lg font-semibold mb-2">Pertama Kali Mengobrol</h3>
+                        <p class="text-txts text-sm leading-relaxed">Dari kata pertama hingga cerita panjang, obrolan kita mengalir begitu alami. Seolah kita sudah saling mengenal sejak lama.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="text-pk500 font-bold text-sm mb-2">💫 Momen Berharga</div>
+                        <h3 class="font-playfair text-lg font-semibold mb-2">Momen Paling Berkesan</h3>
+                        <p class="text-txts text-sm leading-relaxed">Ada momen-momen yang ingin diulang berkali-kali. Tawa, cerita, dan kebersamaan yang membuat hari terasa istimewa.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="text-pk500 font-bold text-sm mb-2">🌟 Ke Depan</div>
+                        <h3 class="font-playfair text-lg font-semibold mb-2">Harapan di Masa Depan</h3>
+                        <p class="text-txts text-sm leading-relaxed">Semoga cerita kita tidak berhenti di sini. Masih banyak hal indah yang menunggu untuk kita jalani bersama.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-24 px-4 bg-pk50">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="font-playfair text-3xl md:text-4xl font-semibold text-center text-txtp mb-4 reveal">Potongan Cerita Kita 📸</h2>
+            <p class="text-center text-txts mb-12 reveal reveal-delay-1">Setiap foto menyimpan ribuan kata</p>
+            <div class="gallery-grid reveal reveal-delay-2">
+                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m1/400/500.jpg" alt="Momen 1" loading="lazy"></div>
+                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m2/400/300.jpg" alt="Momen 2" loading="lazy"></div>
+                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m3/400/420.jpg" alt="Momen 3" loading="lazy"></div>
+                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m4/400/350.jpg" alt="Momen 4" loading="lazy"></div>
+                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m5/400/480.jpg" alt="Momen 5" loading="lazy"></div>
+                <div class="gallery-item" onclick="openLightbox(this)"><img src="https://picsum.photos/seed/silvia-m6/400/320.jpg" alt="Momen 6" loading="lazy"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close"><i class="fas fa-times"></i></span>
+        <img id="lightbox-img" src="" alt="Preview">
     </div>
-  </div>
 
-  <!-- Bottom Center: Visualizer -->
-  <div id="vizBars" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:2px;height:40px;opacity:0.7;">
-  </div>
+    <!-- Letter Section -->
+    <section id="letter" class="py-24 px-4 bg-crml">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="font-playfair text-3xl md:text-4xl font-semibold text-center text-txtp mb-12 reveal">Surat Untukmu 💌</h2>
+            <div class="letter-paper reveal reveal-delay-1">
+                <p class="font-playfair text-xl text-txtp mb-6 italic">Silvia,</p>
+                <p class="font-quicksand text-txts leading-loose mb-5">Terima kasih untuk semua tawa, cerita, perhatian, dan kebahagiaan yang pernah kamu hadirkan.</p>
+                <p class="font-quicksand text-txts leading-loose mb-5">Tidak semua hal bisa diungkapkan dengan kata-kata, tetapi semoga website sederhana ini bisa menjadi pengingat bahwa ada seseorang yang selalu mendoakan hal-hal terbaik untukmu.</p>
+                <p class="font-quicksand text-txts leading-loose mb-8">Semoga langkahmu selalu dimudahkan, impianmu tercapai, dan senyummu selalu terjaga.</p>
+                <p class="font-playfair text-3xl text-pk500 text-right">❤️</p>
+            </div>
+        </div>
+    </section>
 
-  <!-- Bottom Right: Gesture Guide -->
-  <div style="position:absolute;bottom:24px;right:24px;display:flex;gap:12px;align-items:flex-start;">
-    <div style="text-align:center;">
-      <div class="gesture-icon" id="gSwipeL"><i class="fas fa-arrow-left"></i></div>
-      <div class="gesture-label">PREV</div>
+    <!-- Special Section -->
+    <section id="special" class="py-24 px-4 bg-white">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="font-playfair text-3xl md:text-4xl font-semibold text-center text-txtp mb-4 reveal">Alasan Kamu Spesial 💫</h2>
+            <p class="text-center text-txts mb-12 reveal reveal-delay-1">Karena kamu lebih dari sekadar kata-kata</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="special-card reveal">
+                    <div class="special-icon bg-pk50 text-pk500"><i class="fas fa-face-smile"></i></div>
+                    <h3 class="font-playfair text-lg font-semibold mb-2">Senyummu Menenangkan</h3>
+                    <p class="text-txts text-sm">Setiap kali kamu tersenyum, seolah dunia menjadi tempat yang lebih baik.</p>
+                </div>
+                <div class="special-card reveal reveal-delay-1">
+                    <div class="special-icon" style="background:#FFF8E7;color:var(--gold)"><i class="fas fa-star"></i></div>
+                    <h3 class="font-playfair text-lg font-semibold mb-2">Kebaikanmu Menginspirasi</h3>
+                    <p class="text-txts text-sm">Caramu berbuat baik tanpa pamrih adalah pelajaran berharga bagi siapa saja.</p>
+                </div>
+                <div class="special-card reveal reveal-delay-2">
+                    <div class="special-icon bg-pk50 text-pk500"><i class="fas fa-palette"></i></div>
+                    <h3 class="font-playfair text-lg font-semibold mb-2">Kehadiranmu Membawa Warna</h3>
+                    <p class="text-txts text-sm">Hari-hariku menjadi lebih berwarna sejak kamu hadir di dalamnya.</p>
+                </div>
+                <div class="special-card reveal reveal-delay-1">
+                    <div class="special-icon" style="background:#FFF8E7;color:var(--gold)"><i class="fas fa-heart"></i></div>
+                    <h3 class="font-playfair text-lg font-semibold mb-2">Ketulusan yang Nyata</h3>
+                    <p class="text-txts text-sm">Caramu memperlakukan orang lain begitu tulus, itu yang membuatmu berbeda.</p>
+                </div>
+                <div class="special-card reveal reveal-delay-2 sm:col-span-2 lg:col-span-2">
+                    <div class="special-icon bg-gradient-to-br from-pk200 to-pk300 text-white"><i class="fas fa-crown"></i></div>
+                    <h3 class="font-playfair text-lg font-semibold mb-2">Kamu Adalah Sosok yang Istimewa</h3>
+                    <p class="text-txts text-sm">Tidak perlu menjadi sempurna untuk menjadi istimewa. Kamu sudah istimewa dengan cara kamu menjadi dirimu sendiri.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Countdown Section -->
+    <section id="countdown" class="py-24 px-4 bg-gradient-to-b from-pk50 to-crml">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="font-playfair text-3xl md:text-4xl font-semibold text-txtp mb-4 reveal">Menuju Hari Spesialmu 🎂</h2>
+            <p class="text-txts mb-12 reveal reveal-delay-1" id="countdown-subtitle">Setiap detik mendekatkan kita pada momen yang ditunggu</p>
+            <div class="flex justify-center gap-4 md:gap-6 flex-wrap reveal reveal-delay-2">
+                <div class="countdown-box flex-1 min-w-[80px] max-w-[120px]">
+                    <div class="countdown-num" id="cd-days">00</div>
+                    <div class="countdown-label">Hari</div>
+                </div>
+                <div class="countdown-box flex-1 min-w-[80px] max-w-[120px]">
+                    <div class="countdown-num" id="cd-hours">00</div>
+                    <div class="countdown-label">Jam</div>
+                </div>
+                <div class="countdown-box flex-1 min-w-[80px] max-w-[120px]">
+                    <div class="countdown-num" id="cd-mins">00</div>
+                    <div class="countdown-label">Menit</div>
+                </div>
+                <div class="countdown-box flex-1 min-w-[80px] max-w-[120px]">
+                    <div class="countdown-num" id="cd-secs">00</div>
+                    <div class="countdown-label">Detik</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ending Section -->
+    <section id="ending" class="py-32 px-4 text-center text-white relative">
+        <div id="stars-container"></div>
+        <div class="relative z-10">
+            <h2 class="font-playfair text-3xl md:text-4xl font-semibold mb-6 reveal" style="animation:fadeUp 1s ease forwards">Terima kasih sudah membuka website ini ❤️</h2>
+            <p class="font-quicksand text-pk200 max-w-lg mx-auto leading-relaxed mb-10 reveal reveal-delay-1">Jika dunia memberi banyak alasan untuk menyerah, semoga kamu selalu menemukan alasan untuk tersenyum.</p>
+            <button class="ending-btn reveal reveal-delay-2" onclick="finalBurst()">I Will Always Support You 🌹</button>
+        </div>
+    </section>
+
+    <!-- Music Player -->
+    <div id="music-player">
+        <button class="music-btn" id="music-toggle" onclick="toggleMusic()" aria-label="Toggle music">
+            <i class="fas fa-play" id="music-icon"></i>
+        </button>
+        <div class="flex flex-col gap-1">
+            <span class="text-xs font-quicksand font-semibold text-txtp truncate" style="max-width:120px">Romantic Piano</span>
+            <input type="range" min="0" max="100" value="50" class="volume-slider" id="volume-slider" oninput="changeVolume(this.value)" aria-label="Volume">
+        </div>
     </div>
-    <div style="text-align:center;">
-      <div class="gesture-icon" id="gSwipeR"><i class="fas fa-arrow-right"></i></div>
-      <div class="gesture-label">NEXT</div>
-    </div>
-    <div style="text-align:center;">
-      <div class="gesture-icon" id="gPinch"><i class="fas fa-hand-point-up"></i></div>
-      <div class="gesture-label">SELECT</div>
-    </div>
-    <div style="text-align:center;">
-      <div class="gesture-icon" id="gThumbUp"><i class="fas fa-thumbs-up"></i></div>
-      <div class="gesture-label">PLAY</div>
-    </div>
-    <div style="text-align:center;">
-      <div class="gesture-icon" id="gThumbDn"><i class="fas fa-thumbs-down"></i></div>
-      <div class="gesture-label">PAUSE</div>
-    </div>
-  </div>
 
-</div>
-
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-
-/* ============================
-   Musical Constants
-   ============================ */
-const C3=130.81,D3=146.83,E3=164.81,F3=174.61,G3=196.00,A3=220.00,B3=246.94;
-const C4=261.63,D4=293.66,E4=329.63,F4=349.23,G4=392.00,A4=440.00,B4=493.88;
-const C5=523.25,D5=587.33,E5=659.25,F5=698.46,G5=783.99;
-
-/* ============================
-   Song Dataset
-   ============================ */
-const songs = [
-  {
-    title: "NEON DREAMS", artist: "CyberWave", album: "Digital Horizon",
-    duration: "3:42", bpm: 128, key: "#00ff88",
-    cover: "https://picsum.photos/seed/nexus1/300/300.jpg",
-    lead: [C4,0,E4,0,G4,0,C5,0, B4,0,G4,0,E4,0,0,0],
-    bass: [C3,0,0,C3,0,0,C3,0, G3,0,0,G3,0,0,G3,0]
-  },
-  {
-    title: "SYNTHWAVE RUSH", artist: "NeonPulse", album: "Midnight Drive",
-    duration: "4:15", bpm: 135, key: "#00ccff",
-    cover: "https://picsum.photos/seed/nexus2/300/300.jpg",
-    lead: [E4,0,G4,0,B4,0,E5,0, D5,0,B4,0,G4,0,0,0],
-    bass: [E3,0,0,E3,0,0,E3,0, D3,0,0,D3,0,0,D3,0]
-  },
-  {
-    title: "CHROME HEARTS", artist: "DataStream", album: "Binary Sunset",
-    duration: "3:58", bpm: 140, key: "#ff0055",
-    cover: "https://picsum.photos/seed/nexus3/300/300.jpg",
-    lead: [A3,0,C4,0,E4,0,A4,0, G4,0,E4,0,C4,0,0,0],
-    bass: [A2,0,0,A2,0,0,A2,0, G2,0,0,G2,0,0,G2,0]
-  },
-  {
-    title: "QUANTUM LEAP", artist: "ZeroGravity", album: "Event Horizon",
-    duration: "5:01", bpm: 145, key: "#ffaa00",
-    cover: "https://picsum.photos/seed/nexus4/300/300.jpg",
-    lead: [F4,0,A4,0,C5,0,F5,0, E5,0,C5,0,A4,0,0,0],
-    bass: [F3,0,0,F3,0,0,F3,0, E3,0,0,E3,0,0,E3,0]
-  },
-  {
-    title: "VOID WALKER", artist: "DarkMatter", album: "Singularity",
-    duration: "4:33", bpm: 120, key: "#cc44ff",
-    cover: "https://picsum.photos/seed/nexus5/300/300.jpg",
-    lead: [D4,0,F4,0,A4,0,D5,0, C5,0,A4,0,F4,0,0,0],
-    bass: [D3,0,0,D3,0,0,D3,0, C3,0,0,C3,0,0,C3,0]
-  }
-];
-
-/* ============================
-   State
-   ============================ */
-let currentIndex = 0;
-let isPlaying = false;
-let audioCtx = null;
-let analyser = null;
-let masterGain = null;
-let stepInterval = null;
-let currentStep = 0;
-let songProgress = 0;
-let systemActive = false;
-let handResults = null;
-
-/* ============================
-   Music Synth Engine
-   ============================ */
-function initAudio() {
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 128;
-  analyser.smoothingTimeConstant = 0.8;
-  masterGain = audioCtx.createGain();
-  masterGain.gain.value = 0.4;
-  masterGain.connect(analyser);
-  analyser.connect(audioCtx.destination);
-}
-
-function playNote(freq, duration, type = 'sawtooth', vol = 0.12) {
-  if (!audioCtx || freq <= 0) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
-  osc.type = type;
-  osc.frequency.value = freq;
-  filter.type = 'lowpass';
-  filter.frequency.value = 1800 + Math.random() * 600;
-  filter.Q.value = 2;
-  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(masterGain);
-  osc.start();
-  osc.stop(audioCtx.currentTime + duration);
-}
-
-function playKick() {
-  if (!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.12);
-  gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
-  osc.connect(gain);
-  gain.connect(masterGain);
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.2);
-}
-
-function playHihat() {
-  if (!audioCtx) return;
-  const bufferSize = audioCtx.sampleRate * 0.04;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
-  const src = audioCtx.createBufferSource();
-  src.buffer = buffer;
-  const gain = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
-  filter.type = 'highpass';
-  filter.frequency.value = 8000;
-  gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
-  src.connect(filter);
-  filter.connect(gain);
-  gain.connect(masterGain);
-  src.start();
-}
-
-function startPlaying() {
-  if (isPlaying) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  isPlaying = true;
-  currentStep = 0;
-  const song = songs[currentIndex];
-  const stepMs = (60000 / song.bpm) / 4;
-
-  stepInterval = setInterval(() => {
-    const idx = currentStep % song.lead.length;
-    const leadFreq = song.lead[idx];
-    const bassFreq = song.bass[idx];
-    if (leadFreq > 0) playNote(leadFreq, stepMs * 2.5 / 1000, 'sawtooth', 0.1);
-    if (bassFreq > 0) playNote(bassFreq, stepMs * 3 / 1000, 'sine', 0.18);
-    // Kick on beat (every 4 steps)
-    if (currentStep % 4 === 0) playKick();
-    // Hihat on off-beats
-    if (currentStep % 4 === 2) playHihat();
-
-    songProgress = (currentStep % (song.lead.length * 4)) / (song.lead.length * 4);
-    currentStep++;
-  }, stepMs);
-
-  updateNowPlaying();
-}
-
-function stopPlaying() {
-  isPlaying = false;
-  if (stepInterval) { clearInterval(stepInterval); stepInterval = null; }
-}
-
-/* ============================
-   Hand Connection Map
-   ============================ */
-const HAND_CONNS = [
-  [0,1],[1,2],[2,3],[3,4],
-  [0,5],[5,6],[6,7],[7,8],
-  [5,9],[9,10],[10,11],[11,12],
-  [9,13],[13,14],[14,15],[15,16],
-  [13,17],[17,18],[18,19],[19,20],
-  [0,17]
-];
-const FINGERTIPS = [4,8,12,16,20];
-
-/* ============================
-   Gesture Detector
-   ============================ */
-class GestureDetector {
-  constructor() {
-    this.wristHistory = [];
-    this.maxHistory = 18;
-    this.cooldown = 0;
-    this.lastGesture = 'none';
-    this.pinchActive = false;
-    this.pinchCooldown = 0;
-  }
-
-  detect(landmarks) {
-    if (this.cooldown > 0) { this.cooldown--; return 'none'; }
-    if (!landmarks || landmarks.length < 21) return 'none';
-
-    // Thumbs up/down
-    const thumbUp = this.isThumbsUp(landmarks);
-    const thumbDown = this.isThumbsDown(landmarks);
-    if (thumbUp) { this.cooldown = 40; this.lastGesture = 'thumbs_up'; return 'thumbs_up'; }
-    if (thumbDown) { this.cooldown = 40; this.lastGesture = 'thumbs_down'; return 'thumbs_down'; }
-
-    // Pinch
-    const pinch = this.isPinching(landmarks);
-    if (pinch && !this.pinchActive) {
-      this.pinchActive = true;
-      this.cooldown = 25;
-      this.lastGesture = 'pinch';
-      return 'pinch';
-    }
-    if (!pinch) this.pinchActive = false;
-
-    // Swipe
-    const swipe = this.detectSwipe(landmarks);
-    if (swipe !== 'none') {
-      this.cooldown = 35;
-      this.lastGesture = swipe;
-      return swipe;
-    }
-
-    return 'none';
-  }
-
-  isThumbsUp(lm) {
-    if (lm[4].y > lm[3].y) return false;
-    const tips = [8,12,16,20], pips = [6,10,14,18];
-    return tips.every((t,i) => lm[t].y > lm[pips[i]].y - 0.02);
-  }
-
-  isThumbsDown(lm) {
-    if (lm[4].y < lm[3].y + 0.03) return false;
-    const tips = [8,12,16,20], pips = [6,10,14,18];
-    return tips.every((t,i) => lm[t].y > lm[pips[i]].y - 0.02);
-  }
-
-  isPinching(lm) {
-    const dx = lm[4].x - lm[8].x, dy = lm[4].y - lm[8].y;
-    return Math.sqrt(dx*dx + dy*dy) < 0.055;
-  }
-
-  detectSwipe(lm) {
-    const wx = lm[0].x;
-    this.wristHistory.push(wx);
-    if (this.wristHistory.length > this.maxHistory) this.wristHistory.shift();
-    if (this.wristHistory.length < this.maxHistory) return 'none';
-
-    const first = this.wristHistory.slice(0, 6).reduce((a,b)=>a+b,0) / 6;
-    const last = this.wristHistory.slice(-6).reduce((a,b)=>a+b,0) / 6;
-    const delta = last - first;
-
-    if (delta > 0.12) { this.wristHistory = []; return 'swipe_left'; }
-    if (delta < -0.12) { this.wristHistory = []; return 'swipe_right'; }
-    return 'none';
-  }
-}
-
-const gestureDetector = new GestureDetector();
-
-/* ============================
-   Draw Neon Hand Skeleton
-   ============================ */
-function drawHandSkeleton(ctx, landmarks, w, h) {
-  if (!landmarks || landmarks.length < 21) return;
-
-  // Draw connections
-  for (const [a, b] of HAND_CONNS) {
-    const ax = landmarks[a].x * w, ay = landmarks[a].y * h;
-    const bx = landmarks[b].x * w, by = landmarks[b].y * h;
-    const isThumb = (a <= 4 && b <= 4);
-
-    ctx.save();
-    ctx.shadowBlur = isThumb ? 18 : 12;
-    ctx.shadowColor = isThumb ? '#00ccff' : '#00ff88';
-    ctx.strokeStyle = isThumb ? 'rgba(0,204,255,0.8)' : 'rgba(0,255,136,0.7)';
-    ctx.lineWidth = isThumb ? 3 : 2.5;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(ax, ay);
-    ctx.lineTo(bx, by);
-    ctx.stroke();
-    ctx.stroke(); // Double stroke for stronger glow
-    ctx.restore();
-  }
-
-  // Draw joints
-  for (let i = 0; i < 21; i++) {
-    const x = landmarks[i].x * w, y = landmarks[i].y * h;
-    const isTip = FINGERTIPS.includes(i);
-    const radius = isTip ? 6 : 3.5;
-    const color = isTip ? '#00ccff' : '#00ff88';
-
-    ctx.save();
-    ctx.shadowBlur = isTip ? 25 : 12;
-    ctx.shadowColor = color;
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x, y, Math.max(1, radius), 0, Math.PI * 2);
-    ctx.fill();
-
-    // Inner white core
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    ctx.beginPath();
-    ctx.arc(x, y, Math.max(0.5, radius * 0.35), 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  // Draw energy lines from fingertips
-  for (const tip of FINGERTIPS) {
-    const x = landmarks[tip].x * w, y = landmarks[tip].y * h;
-    ctx.save();
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = '#00ccff';
-    ctx.strokeStyle = 'rgba(0,204,255,0.25)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 8]);
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + (Math.random() - 0.5) * 60, y - 40 - Math.random() * 30);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.restore();
-  }
-}
-
-/* ============================
-   Three.js Scene
-   ============================ */
-const threeCanvas = document.getElementById('threeCanvas');
-const scene = new THREE.Scene();
-const cam3d = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-cam3d.position.z = 6;
-
-const renderer = new THREE.WebGLRenderer({ canvas: threeCanvas, alpha: true, antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-// Particles
-const pCount = 700;
-const pGeo = new THREE.BufferGeometry();
-const pPos = new Float32Array(pCount * 3);
-const pVel = new Float32Array(pCount * 3); // Store velocity for animation
-for (let i = 0; i < pCount; i++) {
-  pPos[i*3]   = (Math.random() - 0.5) * 18;
-  pPos[i*3+1] = (Math.random() - 0.5) * 12;
-  pPos[i*3+2] = (Math.random() - 0.5) * 12 - 2;
-  pVel[i*3]   = (Math.random() - 0.5) * 0.003;
-  pVel[i*3+1] = (Math.random() - 0.5) * 0.003;
-  pVel[i*3+2] = (Math.random() - 0.5) * 0.002;
-}
-pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-
-const pMat = new THREE.PointsMaterial({
-  color: 0x00ff88, size: 0.04, transparent: true, opacity: 0.5,
-  blending: THREE.AdditiveBlending, sizeAttenuation: true
-});
-const particles = new THREE.Points(pGeo, pMat);
-scene.add(particles);
-
-// Wireframe icosahedron
-const icoGeo = new THREE.IcosahedronGeometry(1.8, 1);
-const icoMat = new THREE.MeshBasicMaterial({
-  color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.08
-});
-const ico = new THREE.Mesh(icoGeo, icoMat);
-scene.add(ico);
-
-// Second wireframe (octahedron, inner)
-const octGeo = new THREE.OctahedronGeometry(1.0, 0);
-const octMat = new THREE.MeshBasicMaterial({
-  color: 0x00ccff, wireframe: true, transparent: true, opacity: 0.06
-});
-const oct = new THREE.Mesh(octGeo, octMat);
-scene.add(oct);
-
-// Ring geometry (HUD ring)
-const ringGeo = new THREE.TorusGeometry(2.8, 0.008, 8, 128);
-const ringMat = new THREE.MeshBasicMaterial({
-  color: 0x00ff88, transparent: true, opacity: 0.15
-});
-const ring = new THREE.Mesh(ringGeo, ringMat);
-ring.rotation.x = Math.PI / 2;
-scene.add(ring);
-
-// Audio reactive data
-let audioLevel = 0;
-let smoothAudioLevel = 0;
-
-/* ============================
-   Build Music Cards
-   ============================ */
-const carousel = document.getElementById('cardCarousel');
-const cardElements = [];
-
-songs.forEach((song, i) => {
-  const card = document.createElement('div');
-  card.className = 'music-card';
-  card.innerHTML = `
-    <div class="hud-corner hud-corner--tl"></div>
-    <div class="hud-corner hud-corner--tr"></div>
-    <div class="hud-corner hud-corner--bl"></div>
-    <div class="hud-corner hud-corner--br"></div>
-    <img class="cover" src="${song.cover}" alt="${song.title}" loading="lazy">
-    <div class="title">${song.title}</div>
-    <div class="artist">${song.artist} // ${song.album}</div>
-    <div class="meta">
-      <span class="bpm-tag">${song.bpm} BPM</span>
-      <span class="dur"><i class="far fa-clock" style="margin-right:4px;"></i>${song.duration}</span>
-    </div>
-    <div id="progressBar"><div id="progressFill"></div></div>
-  `;
-  card.style.transformOrigin = 'center center';
-  carousel.appendChild(card);
-  cardElements.push(card);
-});
-
-function updateCards(animate = true) {
-  cardElements.forEach((card, i) => {
-    const offset = i - currentIndex;
-    const absOff = Math.abs(offset);
-    const x = offset * 300;
-    const rz = offset * -8;
-    const ry = offset * -12;
-    const s = Math.max(0.5, 1 - absOff * 0.18);
-    const op = Math.max(0, 1 - absOff * 0.35);
-    const zIdx = 10 - absOff;
-
-    card.style.zIndex = zIdx;
-    card.classList.toggle('active', offset === 0);
-
-    if (animate) {
-      gsap.to(card, { x, rotateZ: rz, rotateY: ry, scale: s, opacity: op, duration: 0.55, ease: 'power2.out' });
-    } else {
-      gsap.set(card, { x, rotateZ: rz, rotateY: ry, scale: s, opacity: op });
-    }
-  });
-}
-updateCards(false);
-
-/* ============================
-   Build Visualizer Bars
-   ============================ */
-const vizBarsEl = document.getElementById('vizBars');
-const vizBarCount = 48;
-const vizBarEls = [];
-for (let i = 0; i < vizBarCount; i++) {
-  const bar = document.createElement('div');
-  bar.className = 'viz-bar';
-  bar.style.height = '2px';
-  vizBarsEl.appendChild(bar);
-  vizBarEls.push(bar);
-}
-
-// Mini visualizer in now-playing section
-const vizMini = document.getElementById('vizContainer');
-const vizMiniEls = [];
-for (let i = 0; i < 16; i++) {
-  const bar = document.createElement('div');
-  bar.style.width = '2px';
-  bar.style.height = '2px';
-  bar.style.background = 'var(--neon)';
-  bar.style.borderRadius = '1px';
-  bar.style.minHeight = '1px';
-  bar.style.boxShadow = '0 0 4px rgba(0,255,136,0.5)';
-  vizMini.appendChild(bar);
-  vizMiniEls.push(bar);
-}
-
-/* ============================
-   Update Now Playing Info
-   ============================ */
-function updateNowPlaying() {
-  const song = songs[currentIndex];
-  document.getElementById('npTitle').textContent = song.title;
-  document.getElementById('npArtist').textContent = song.artist;
-
-  // Update accent color on active card border
-  document.documentElement.style.setProperty('--neon', song.key);
-}
-
-/* ============================
-   Show Gesture Notification
-   ============================ */
-function showGestureNotify(text) {
-  const el = document.getElementById('gestureNotify');
-  el.textContent = text;
-  gsap.killTweensOf(el);
-  gsap.fromTo(el,
-    { opacity: 0, scale: 1.5, y: -10 },
-    { opacity: 1, scale: 1, y: 0, duration: 0.2, ease: 'power2.out',
-      onComplete: () => {
-        gsap.to(el, { opacity: 0, y: -15, duration: 0.6, delay: 0.4, ease: 'power2.in' });
-      }
-    }
-  );
-}
-
-function flashGestureIcon(id) {
-  const el = document.getElementById(id);
-  el.classList.add('active');
-  setTimeout(() => el.classList.remove('active'), 600);
-}
-
-/* ============================
-   Handle Gesture
-   ============================ */
-function handleGesture(gesture) {
-  switch(gesture) {
-    case 'swipe_left':
-      currentIndex = (currentIndex - 1 + songs.length) % songs.length;
-      updateCards(true);
-      if (isPlaying) { stopPlaying(); startPlaying(); }
-      updateNowPlaying();
-      showGestureNotify('PREV');
-      flashGestureIcon('gSwipeL');
-      break;
-    case 'swipe_right':
-      currentIndex = (currentIndex + 1) % songs.length;
-      updateCards(true);
-      if (isPlaying) { stopPlaying(); startPlaying(); }
-      updateNowPlaying();
-      showGestureNotify('NEXT');
-      flashGestureIcon('gSwipeR');
-      break;
-    case 'pinch':
-      if (!isPlaying) {
-        startPlaying();
-        showGestureNotify('PLAY');
-      } else {
-        showGestureNotify('SELECT');
-      }
-      flashGestureIcon('gPinch');
-      break;
-    case 'thumbs_up':
-      if (!isPlaying) {
-        startPlaying();
-        showGestureNotify('PLAY');
-      }
-      flashGestureIcon('gThumbUp');
-      break;
-    case 'thumbs_down':
-      if (isPlaying) {
-        stopPlaying();
-        showGestureNotify('PAUSE');
-      }
-      flashGestureIcon('gThumbDn');
-      break;
-  }
-}
-
-/* ============================
-   Hand Tracking Canvas
-   ============================ */
-const handCanvas = document.getElementById('handCanvas');
-const hCtx = handCanvas.getContext('2d');
-
-function resizeHandCanvas() {
-  handCanvas.width = window.innerWidth;
-  handCanvas.height = window.innerHeight;
-}
-resizeHandCanvas();
-
-function onHandResults(results) {
-  handResults = results;
-}
-
-/* ============================
-   FPS Counter
-   ============================ */
-let frameCount = 0, lastFpsTime = performance.now(), fps = 0;
-function updateFps() {
-  frameCount++;
-  const now = performance.now();
-  if (now - lastFpsTime >= 1000) {
-    fps = frameCount;
-    frameCount = 0;
-    lastFpsTime = now;
-    document.getElementById('fpsDisplay').textContent = fps;
-  }
-}
-
-/* ============================
-   Main Render Loop
-   ============================ */
-const clock = new THREE.Clock();
-
-function animate() {
-  requestAnimationFrame(animate);
-  updateFps();
-  const t = clock.getElapsedTime();
-  const dt = clock.getDelta();
-
-  // Three.js animations
-  ico.rotation.x = t * 0.15;
-  ico.rotation.y = t * 0.2;
-  oct.rotation.x = -t * 0.25;
-  oct.rotation.z = t * 0.18;
-  ring.rotation.z = t * 0.08;
-
-  // Audio reactivity
-  if (analyser && isPlaying) {
-    const dataArr = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(dataArr);
-    let sum = 0;
-    for (let i = 0; i < dataArr.length; i++) sum += dataArr[i];
-    audioLevel = sum / dataArr.length / 255;
-
-    // Update visualizer bars
-    for (let i = 0; i < vizBarCount; i++) {
-      const di = Math.floor(i * dataArr.length / vizBarCount);
-      const val = dataArr[di] / 255;
-      vizBarEls[i].style.height = Math.max(2, val * 40) + 'px';
-      vizBarEls[i].style.opacity = 0.3 + val * 0.7;
-    }
-    for (let i = 0; i < 16; i++) {
-      const di = Math.floor(i * dataArr.length / 16);
-      const val = dataArr[di] / 255;
-      vizMiniEls[i].style.height = Math.max(1, val * 20) + 'px';
-    }
-  } else {
-    audioLevel *= 0.95;
-    for (const bar of vizBarEls) { bar.style.height = '2px'; bar.style.opacity = '0.3'; }
-    for (const bar of vizMiniEls) { bar.style.height = '1px'; }
-  }
-
-  smoothAudioLevel += (audioLevel - smoothAudioLevel) * 0.15;
-
-  // Audio-reactive icosahedron scale
-  const icoScale = 1 + smoothAudioLevel * 0.6;
-  ico.scale.setScalar(icoScale);
-  icoMat.opacity = 0.06 + smoothAudioLevel * 0.12;
-
-  const octScale = 1 + smoothAudioLevel * 0.4;
-  oct.scale.setScalar(octScale);
-
-  // Particle drift
-  const positions = pGeo.attributes.position.array;
-  const speed = isPlaying ? (1 + smoothAudioLevel * 3) : 0.5;
-  for (let i = 0; i < pCount; i++) {
-    positions[i*3]   += pVel[i*3] * speed;
-    positions[i*3+1] += pVel[i*3+1] * speed;
-    positions[i*3+2] += pVel[i*3+2] * speed;
-    // Wrap around
-    if (positions[i*3] > 9) positions[i*3] = -9;
-    if (positions[i*3] < -9) positions[i*3] = 9;
-    if (positions[i*3+1] > 6) positions[i*3+1] = -6;
-    if (positions[i*3+1] < -6) positions[i*3+1] = 6;
-  }
-  pGeo.attributes.position.needsUpdate = true;
-  pMat.opacity = 0.3 + smoothAudioLevel * 0.5;
-  pMat.size = 0.03 + smoothAudioLevel * 0.06;
-
-  // HUD progress arc
-  const circumference = 2 * Math.PI * 210;
-  const progressArc = document.getElementById('progressArc');
-  if (isPlaying) {
-    const dashLen = songProgress * circumference;
-    progressArc.setAttribute('stroke-dasharray', `${dashLen} ${circumference}`);
-    progressArc.setAttribute('stroke', songs[currentIndex].key);
-  } else {
-    progressArc.setAttribute('stroke-dasharray', `0 ${circumference}`);
-  }
-
-  // Update progress fill on active card
-  const activeCard = cardElements[currentIndex];
-  if (activeCard) {
-    const fill = activeCard.querySelector('#progressFill');
-    if (fill) fill.style.width = (songProgress * 100) + '%';
-  }
-
-  renderer.render(scene, cam3d);
-
-  // Draw hand skeleton on 2D canvas
-  hCtx.clearRect(0, 0, handCanvas.width, handCanvas.height);
-  if (handResults && handResults.multiHandLandmarks) {
-    const numHands = handResults.multiHandLandmarks.length;
-    document.getElementById('handCount').textContent = numHands;
-
-    for (const landmarks of handResults.multiHandLandmarks) {
-      drawHandSkeleton(hCtx, landmarks, handCanvas.width, handCanvas.height);
-
-      // Detect gestures
-      const gesture = gestureDetector.detect(landmarks);
-      if (gesture !== 'none') handleGesture(gesture);
-    }
-
-    // Draw pinch indicator
-    if (handResults.multiHandLandmarks.length > 0) {
-      const lm = handResults.multiHandLandmarks[0];
-      const thumbTip = lm[4], indexTip = lm[8];
-      const dx = thumbTip.x - indexTip.x, dy = thumbTip.y - indexTip.y;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-
-      if (dist < 0.1) {
-        const cx = (thumbTip.x + indexTip.x) / 2 * handCanvas.width;
-        const cy = (thumbTip.y + indexTip.y) / 2 * handCanvas.height;
-        const radius = Math.max(5, (0.1 - dist) * 500);
-
-        hCtx.save();
-        hCtx.shadowBlur = 20;
-        hCtx.shadowColor = '#00ccff';
-        hCtx.strokeStyle = `rgba(0,204,255,${0.3 + (0.1 - dist) * 8})`;
-        hCtx.lineWidth = 2;
-        hCtx.beginPath();
-        hCtx.arc(cx, cy, radius, 0, Math.PI * 2);
-        hCtx.stroke();
-        hCtx.restore();
-      }
-    }
-  } else {
-    document.getElementById('handCount').textContent = '0';
-  }
-}
-
-animate();
-
-/* ============================
-   Window Resize
-   ============================ */
-window.addEventListener('resize', () => {
-  cam3d.aspect = window.innerWidth / window.innerHeight;
-  cam3d.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  resizeHandCanvas();
-});
-
-/* ============================
-   Boot Sequence & Init
-   ============================ */
-const startOverlay = document.getElementById('startOverlay');
-const bootTerminal = document.getElementById('bootTerminal');
-
-const bootLines = [
-  { text: '> INITIALIZING NEXUS AR MUSIC SYSTEM...', delay: 0 },
-  { text: '> CAMERA MODULE.............. ', status: 'ok', delay: 400 },
-  { text: '> HAND TRACKING ENGINE....... ', status: 'ok', delay: 800 },
-  { text: '> NEURAL GESTURE PROCESSOR... ', status: 'ok', delay: 1200 },
-  { text: '> AUDIO SYNTHESIZER......... ', status: 'ok', delay: 1600 },
-  { text: '> 3D RENDERING PIPELINE...... ', status: 'ok', delay: 2000 },
-  { text: '> HOLOGRAPHIC UI............. ', status: 'ok', delay: 2400 },
-  { text: '', delay: 2900 },
-  { text: '> SYSTEM READY', status: 'ready', delay: 3000 },
-];
-
-async function runBoot() {
-  startOverlay.style.opacity = '0';
-  startOverlay.style.pointerEvents = 'none';
-  await new Promise(r => setTimeout(r, 500));
-  startOverlay.style.display = 'none';
-
-  bootTerminal.style.display = 'flex';
-  for (const line of bootLines) {
-    await new Promise(r => setTimeout(r, line.delay === 0 ? 100 : 350));
-    const div = document.createElement('div');
-    div.className = 'line';
-    if (line.status === 'ok') {
-      div.innerHTML = `${line.text}<span class="ok">[OK]</span>`;
-    } else if (line.status === 'ready') {
-      div.innerHTML = `<span class="ok" style="font-weight:bold;">${line.text}</span>`;
-    } else {
-      div.textContent = line.text;
-    }
-    bootTerminal.appendChild(div);
-    gsap.to(div, { opacity: 1, duration: 0.15 });
-  }
-
-  await new Promise(r => setTimeout(r, 800));
-  gsap.to(bootTerminal, {
-    opacity: 0, duration: 0.5,
-    onComplete: () => {
-      bootTerminal.style.display = 'none';
-      activateSystem();
-    }
-  });
-}
-
-async function activateSystem() {
-  systemActive = true;
-
-  // Init audio
-  initAudio();
-
-  // Init MediaPipe Hands
-  try {
-    const hands = new Hands({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    <!-- Footer -->
+    <footer class="py-8 px-4 text-center bg-gradient-to-b from-pk700 to-pk800 text-pk200">
+        <p class="font-quicksand text-sm">Made with ❤️ by Someone Who Cares About You &mdash; <span id="footer-year"></span></p>
+    </footer>
+
+    <script>
+    /* ========================================
+       KONFIGURASI - Ganti tanggal di bawah ini
+       dengan tanggal ulang tahun Silvia
+    ======================================== */
+    const BIRTHDAY_DATE = new Date('2025-08-15T00:00:00');
+
+    /* ========================================
+       LOADING SCREEN
+    ======================================== */
+    (function initLoading(){
+        const bar = document.getElementById('load-bar-inner');
+        let progress = 0;
+        const interval = setInterval(()=>{
+            progress += Math.random() * 15 + 5;
+            if(progress >= 100){
+                progress = 100;
+                bar.style.width = '100%';
+                clearInterval(interval);
+                setTimeout(()=> document.getElementById('loading').classList.add('hidden'), 400);
+                setTimeout(()=> startTyping(), 800);
+            } else {
+                bar.style.width = progress + '%';
+            }
+        }, 250);
+    })();
+
+    /* ========================================
+       CURSOR GLOW
+    ======================================== */
+    const cursorGlow = document.getElementById('cursor-glow');
+    let mouseX = 0, mouseY = 0;
+    document.addEventListener('mousemove', e => {
+        mouseX = e.clientX; mouseY = e.clientY;
+        cursorGlow.style.left = mouseX + 'px';
+        cursorGlow.style.top = mouseY + 'px';
     });
-    hands.setOptions({
-      maxNumHands: 2,
-      modelComplexity: 1,
-      minDetectionConfidence: 0.65,
-      minTrackingConfidence: 0.5
-    });
-    hands.onResults(onHandResults);
+    /* Sembunyikan di mobile */
+    if('ontouchstart' in window) cursorGlow.style.display = 'none';
 
-    const videoEl = document.getElementById('webcam');
-    const mpCamera = new Camera(videoEl, {
-      onFrame: async () => {
-        await hands.send({ image: videoEl });
-      },
-      width: 1280,
-      height: 720
-    });
-    await mpCamera.start();
-  } catch(e) {
-    console.warn('Camera/MediaPipe error:', e);
-    // Show fallback message
-    const errMsg = document.createElement('div');
-    errMsg.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);z-index:50;padding:12px 24px;border:1px solid rgba(255,0,85,0.4);background:rgba(255,0,85,0.08);color:#ff0055;font-size:0.75rem;border-radius:8px;text-align:center;letter-spacing:0.1em;';
-    errMsg.textContent = 'CAMERA UNAVAILABLE — USE GESTURE GUIDE ICONS TO CONTROL';
-    document.body.appendChild(errMsg);
-  }
+    /* ========================================
+       PARTICLE BACKGROUND
+    ======================================== */
+    (function initParticles(){
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resize(); window.addEventListener('resize', resize);
 
-  // Update status
-  document.getElementById('statusDot').classList.remove('inactive');
-  document.getElementById('statusText').textContent = 'ACTIVE';
-  document.getElementById('statusText').style.color = 'var(--neon)';
+        for(let i = 0; i < 60; i++){
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 2 + 0.5,
+                dx: (Math.random() - 0.5) * 0.3,
+                dy: (Math.random() - 0.5) * 0.3,
+                opacity: Math.random() * 0.4 + 0.1
+            });
+        }
+        function draw(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, Math.max(0.1, p.r), 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(244,143,177,${p.opacity})`;
+                ctx.fill();
+                p.x += p.dx; p.y += p.dy;
+                if(p.x < 0) p.x = canvas.width;
+                if(p.x > canvas.width) p.x = 0;
+                if(p.y < 0) p.y = canvas.height;
+                if(p.y > canvas.height) p.y = 0;
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    })();
 
-  // Animate UI elements in
-  gsap.to('#nowPlaying', { opacity: 1, y: 0, duration: 0.6, delay: 0.2, ease: 'power2.out' });
-  gsap.fromTo('#hudArcs', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.8, delay: 0.1, ease: 'power2.out' });
+    /* ========================================
+       FLOATING HEARTS
+    ======================================== */
+    (function initHearts(){
+        const container = document.getElementById('hearts-container');
+        const hearts = ['❤️','💕','💗','💖','🩷','🤍','✨'];
+        function createHeart(){
+            const h = document.createElement('div');
+            h.className = 'floating-heart';
+            h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+            h.style.left = Math.random() * 100 + 'vw';
+            h.style.fontSize = (Math.random() * 1 + 0.8) + 'rem';
+            h.style.animationDuration = (Math.random() * 8 + 8) + 's';
+            h.style.animationDelay = Math.random() * 2 + 's';
+            container.appendChild(h);
+            setTimeout(()=> h.remove(), 18000);
+        }
+        setInterval(createHeart, 1500);
+        /* Buat beberapa awal */
+        for(let i = 0; i < 5; i++) setTimeout(createHeart, i * 400);
+    })();
 
-  // Entrance animation for cards
-  cardElements.forEach((card, i) => {
-    gsap.fromTo(card, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.3 + i * 0.08, ease: 'power2.out' });
-  });
+    /* ========================================
+       SPARKLES
+    ======================================== */
+    (function initSparkles(){
+        const container = document.getElementById('sparkle-container');
+        function createSparkle(){
+            const s = document.createElement('div');
+            s.className = 'sparkle';
+            s.style.left = Math.random() * 100 + 'vw';
+            s.style.top = Math.random() * 100 + 'vh';
+            s.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            s.style.animationDelay = Math.random() * 2 + 's';
+            container.appendChild(s);
+            setTimeout(()=> s.remove(), 7000);
+        }
+        setInterval(createSparkle, 800);
+    })();
 
-  updateNowPlaying();
-}
-
-/* ============================
-   Start on Click / Keyboard
-   ============================ */
-function startSystem() {
-  if (startOverlay.style.display === 'none') return;
-  runBoot();
-}
-
-startOverlay.addEventListener('click', startSystem);
-startOverlay.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' || e.key === ' ') startSystem();
-});
-
-/* ============================
-   Fallback: Click Gesture Icons
-   (When camera is not available)
-   ============================ */
-document.getElementById('gSwipeL').style.pointerEvents = 'auto';
-document.getElementById('gSwipeR').style.pointerEvents = 'auto';
-document.getElementById('gPinch').style.pointerEvents = 'auto';
-document.getElementById('gThumbUp').style.pointerEvents = 'auto';
-document.getElementById('gThumbDn').style.pointerEvents = 'auto';
-document.getElementById('gSwipeL').style.cursor = 'pointer';
-document.getElementById('gSwipeR').style.cursor = 'pointer';
-document.getElementById('gPinch').style.cursor = 'pointer';
-document.getElementById('gThumbUp').style.cursor = 'pointer';
-document.getElementById('gThumbDn').style.cursor = 'pointer';
-
-document.getElementById('gSwipeL').addEventListener('click', () => handleGesture('swipe_left'));
-document.getElementById('gSwipeR').addEventListener('click', () => handleGesture('swipe_right'));
-document.getElementById('gPinch').addEventListener('click', () => handleGesture('pinch'));
-document.getElementById('gThumbUp').addEventListener('click', () => handleGesture('thumbs_up'));
-document.getElementById('gThumbDn').addEventListener('click', () => handleGesture('thumbs_down'));
-
-/* ============================
-   Keyboard fallback controls
-   ============================ */
-window.addEventListener('keydown', (e) => {
-  if (!systemActive) return;
-  switch(e.key) {
-    case 'ArrowLeft': handleGesture('swipe_left'); break;
-    case 'ArrowRight': handleGesture('swipe_right'); break;
-    case ' ': e.preventDefault(); handleGesture(isPlaying ? 'thumbs_down' : 'thumbs_up'); break;
-    case 'Enter': handleGesture('pinch'); break;
-  }
-});
-
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS // AR MUSIC SYSTEM</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js" crossorigin="anonymous"></script>
-<style>
-  :root {
-    --neon: #00ff88;
-    --cyan: #00ccff;
-    --hot: #ff0055;
-    --amber: #ffaa00;
-    --bg: #050508;
-    --card-bg: rgba(0, 255, 136, 0.04);
-    --card-border: rgba(0, 255, 136, 0.18);
-    --text: #d0ffe0;
-    --muted: rgba(0, 255, 136, 0.4);
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); font-family: 'Share Tech Mono', monospace; color: var(--text); overflow: hidden; height: 100vh; width: 100vw; }
-
-  /* Scanlines */
-  #scanlines {
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 255, 136, 0.015) 2px,
-      rgba(0, 255, 136, 0.015) 4px
-    );
-    z-index: 6;
-  }
-
-  /* Start overlay */
-  #startOverlay {
-    position: fixed; inset: 0; z-index: 100;
-    background: radial-gradient(ellipse at center, rgba(0,255,136,0.03) 0%, var(--bg) 70%);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    cursor: pointer; transition: opacity 0.6s ease;
-  }
-  #startOverlay .ring {
-    width: 180px; height: 180px; border-radius: 50%;
-    border: 2px solid var(--neon); position: relative;
-    animation: pulseRing 2s ease-in-out infinite;
-  }
-  #startOverlay .ring::before {
-    content: ''; position: absolute; inset: 12px; border-radius: 50%;
-    border: 1px solid rgba(0,255,136,0.3);
-    animation: pulseRing 2s ease-in-out infinite 0.3s;
-  }
-  #startOverlay .ring::after {
-    content: ''; position: absolute; inset: 28px; border-radius: 50%;
-    border: 1px solid rgba(0,255,136,0.15);
-    animation: pulseRing 2s ease-in-out infinite 0.6s;
-  }
-  @keyframes pulseRing {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.08); opacity: 0.6; }
-  }
-  #startOverlay h1 {
-    font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 3.5rem;
-    letter-spacing: 0.3em; color: var(--neon); margin-top: 2rem;
-    text-shadow: 0 0 40px rgba(0,255,136,0.5), 0 0 80px rgba(0,255,136,0.2);
-  }
-  #startOverlay .sub {
-    font-size: 0.85rem; color: var(--muted); letter-spacing: 0.5em; margin-top: 0.5rem;
-  }
-  #startOverlay .tap {
-    margin-top: 3rem; font-size: 0.75rem; letter-spacing: 0.4em;
-    color: var(--neon); animation: blink 1.2s ease-in-out infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
-
-  /* Boot terminal */
-  #bootTerminal {
-    position: fixed; inset: 0; z-index: 99; background: var(--bg);
-    display: none; flex-direction: column; justify-content: center;
-    padding: 10%; font-size: 0.85rem; line-height: 2;
-  }
-  #bootTerminal .line { opacity: 0; }
-  #bootTerminal .ok { color: var(--neon); }
-  #bootTerminal .fail { color: var(--hot); }
-
-  /* HUD elements */
-  .hud-label {
-    font-size: 0.6rem; letter-spacing: 0.25em; color: var(--muted);
-    text-transform: uppercase;
-  }
-  .hud-value {
-    font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--neon);
-  }
-  .hud-corner {
-    position: absolute; width: 24px; height: 24px;
-  }
-  .hud-corner--tl { top: 0; left: 0; border-top: 2px solid var(--neon); border-left: 2px solid var(--neon); }
-  .hud-corner--tr { top: 0; right: 0; border-top: 2px solid var(--neon); border-right: 2px solid var(--neon); }
-  .hud-corner--bl { bottom: 0; left: 0; border-bottom: 2px solid var(--neon); border-left: 2px solid var(--neon); }
-  .hud-corner--br { bottom: 0; right: 0; border-bottom: 2px solid var(--neon); border-right: 2px solid var(--neon); }
-
-  /* Music cards */
-  .music-card {
-    position: absolute; width: 260px; height: 320px;
-    background: var(--card-bg);
-    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--card-border);
-    border-radius: 16px; padding: 16px;
-    box-shadow: 0 0 40px rgba(0,255,136,0.06), inset 0 1px 0 rgba(0,255,136,0.1);
-    transition: box-shadow 0.4s ease;
-    will-change: transform, opacity;
-  }
-  .music-card.active {
-    box-shadow: 0 0 60px rgba(0,255,136,0.15), inset 0 1px 0 rgba(0,255,136,0.2), 0 0 120px rgba(0,255,136,0.05);
-    border-color: rgba(0,255,136,0.35);
-  }
-  .music-card .cover {
-    width: 100%; height: 160px; border-radius: 10px; object-fit: cover;
-    border: 1px solid rgba(0,255,136,0.1);
-  }
-  .music-card .title {
-    font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 0.85rem;
-    color: #fff; margin-top: 12px; letter-spacing: 0.05em;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .music-card .artist {
-    font-size: 0.7rem; color: var(--muted); margin-top: 4px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .music-card .meta {
-    display: flex; justify-content: space-between; align-items: center; margin-top: 12px;
-  }
-  .music-card .bpm-tag {
-    font-size: 0.6rem; padding: 2px 8px; border-radius: 4px;
-    border: 1px solid rgba(0,255,136,0.2); color: var(--neon);
-    background: rgba(0,255,136,0.05);
-  }
-  .music-card .dur {
-    font-size: 0.65rem; color: var(--muted);
-  }
-
-  /* Progress bar */
-  #progressBar {
-    position: absolute; bottom: 0; left: 16px; right: 16px; height: 3px;
-    background: rgba(0,255,136,0.1); border-radius: 2px; overflow: hidden;
-  }
-  #progressFill {
-    height: 100%; width: 0%; border-radius: 2px;
-    background: linear-gradient(90deg, var(--neon), var(--cyan));
-    box-shadow: 0 0 8px var(--neon);
-    transition: width 0.3s linear;
-  }
-
-  /* Visualizer bars */
-  .viz-bar {
-    width: 3px; background: var(--neon); border-radius: 2px;
-    box-shadow: 0 0 6px rgba(0,255,136,0.5);
-    transition: height 0.05s linear;
-    min-height: 2px;
-  }
-
-  /* Gesture notification */
-  #gestureNotify {
-    font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.4rem;
-    color: var(--neon); letter-spacing: 0.2em;
-    text-shadow: 0 0 30px rgba(0,255,136,0.8), 0 0 60px rgba(0,255,136,0.3);
-    opacity: 0; pointer-events: none;
-  }
-
-  /* Gesture guide */
-  .gesture-icon {
-    width: 44px; height: 44px; border-radius: 50%;
-    border: 1px solid rgba(0,255,136,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.9rem; color: var(--muted);
-    background: rgba(0,255,136,0.03);
-    transition: all 0.3s ease;
-  }
-  .gesture-icon.active {
-    border-color: var(--neon); color: var(--neon);
-    box-shadow: 0 0 20px rgba(0,255,136,0.3);
-    background: rgba(0,255,136,0.08);
-  }
-  .gesture-label {
-    font-size: 0.5rem; color: var(--muted); letter-spacing: 0.15em;
-    margin-top: 4px; text-align: center;
-  }
-
-  /* HUD arcs SVG */
-  #hudArcs {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none; z-index: 4;
-  }
-
-  /* Status dot */
-  .status-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--neon); box-shadow: 0 0 8px var(--neon);
-    animation: dotPulse 1.5s ease-in-out infinite;
-  }
-  .status-dot.inactive { background: #333; box-shadow: none; animation: none; }
-  @keyframes dotPulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-
-  /* Now playing info */
-  #nowPlaying {
-    opacity: 0; transform: translateY(10px);
-  }
-
-  @media (max-width: 768px) {
-    .music-card { width: 200px; height: 260px; padding: 12px; }
-    .music-card .cover { height: 120px; }
-    .music-card .title { font-size: 0.7rem; }
-    #startOverlay h1 { font-size: 2rem; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-  }
-</style>
-</head>
-<body>
-
-<!-- Start Overlay -->
-<div id="startOverlay" role="button" aria-label="Click to activate AR Music System" tabindex="0">
-  <div class="ring"></div>
-  <h1>NEXUS</h1>
-  <div class="sub">AR MUSIC SYSTEM v2.0</div>
-  <div class="tap">[ TAP TO ACTIVATE ]</div>
-</div>
-
-<!-- Boot Terminal -->
-<div id="bootTerminal" aria-live="polite"></div>
-
-<!-- Webcam Video -->
-<video id="webcam" autoplay playsinline style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);z-index:0;opacity:0.85;"></video>
-
-<!-- Dark overlay -->
-<div style="position:fixed;inset:0;background:rgba(5,5,8,0.5);z-index:1;"></div>
-
-<!-- Three.js Canvas -->
-<canvas id="threeCanvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:2;"></canvas>
-
-<!-- Hand Tracking Canvas -->
-<canvas id="handCanvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:3;transform:scaleX(-1);"></canvas>
-
-<!-- Scanlines -->
-<div id="scanlines" style="position:fixed;inset:0;pointer-events:none;z-index:6;"></div>
-
-<!-- HUD Arcs -->
-<svg id="hudArcs" width="460" height="460" viewBox="0 0 460 460">
-  <circle cx="230" cy="230" r="210" fill="none" stroke="rgba(0,255,136,0.08)" stroke-width="1" stroke-dasharray="4 8"/>
-  <circle cx="230" cy="230" r="220" fill="none" stroke="rgba(0,255,136,0.04)" stroke-width="0.5" stroke-dasharray="2 12"/>
-  <circle id="progressArc" cx="230" cy="230" r="210" fill="none" stroke="rgba(0,255,136,0.5)" stroke-width="2" stroke-dasharray="0 1320" stroke-linecap="round" transform="rotate(-90 230 230)" style="filter:drop-shadow(0 0 6px rgba(0,255,136,0.6));transition:stroke-dasharray 0.3s linear;"/>
-  <!-- Corner markers -->
-  <line x1="60" y1="60" x2="90" y2="60" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="60" y1="60" x2="60" y2="90" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="400" y1="60" x2="370" y2="60" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="400" y1="60" x2="400" y2="90" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="60" y1="400" x2="90" y2="400" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="60" y1="400" x2="60" y2="370" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="400" y1="400" x2="370" y2="400" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-  <line x1="400" y1="400" x2="400" y2="370" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
-</svg>
-
-<!-- UI Overlay -->
-<div id="uiOverlay" style="position:fixed;inset:0;z-index:5;pointer-events:none;">
-
-  <!-- Top Left: System Info -->
-  <div style="position:absolute;top:24px;left:24px;">
-    <div class="hud-label">System</div>
-    <div class="hud-value" style="font-size:0.95rem;letter-spacing:0.15em;">NEXUS</div>
-    <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
-      <div class="status-dot inactive" id="statusDot"></div>
-      <span class="hud-label" id="statusText" style="color:rgba(0,255,136,0.3);">STANDBY</span>
-    </div>
-  </div>
-
-  <!-- Top Right: Telemetry -->
-  <div style="position:absolute;top:24px;right:24px;text-align:right;">
-    <div class="hud-label">FPS</div>
-    <div class="hud-value" id="fpsDisplay">--</div>
-    <div class="hud-label" style="margin-top:8px;">HANDS</div>
-    <div class="hud-value" id="handCount">0</div>
-  </div>
-
-  <!-- Center: Card Carousel -->
-  <div id="cardCarousel" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);perspective:1200px;width:260px;height:320px;">
-  </div>
-
-  <!-- Gesture Notification -->
-  <div id="gestureNotify" style="position:absolute;top:calc(50% - 220px);left:50%;transform:translateX(-50%);"></div>
-
-  <!-- Bottom Left: Now Playing -->
-  <div id="nowPlaying" style="position:absolute;bottom:90px;left:24px;">
-    <div class="hud-label">NOW PLAYING</div>
-    <div id="npTitle" style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:0.9rem;color:#fff;margin-top:4px;">--</div>
-    <div id="npArtist" style="font-size:0.7rem;color:var(--muted);margin-top:2px;">--</div>
-    <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-      <i class="fas fa-signal" style="font-size:0.6rem;color:var(--neon);"></i>
-      <div id="vizContainer" style="display:flex;align-items:flex-end;gap:2px;height:20px;"></div>
-    </div>
-  </div>
-
-  <!-- Bottom Center: Visualizer -->
-  <div id="vizBars" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;gap:2px;height:40px;opacity:0.7;">
-  </div>
-
-  <!-- Bottom Right: Gesture Guide -->
-  <div style="position:absolute;bottom:24px;right:24px;display:flex;gap:12px;align-items:flex-start;">
-    <div style="text-align:center;">
-      <div class="gesture-icon" id="gSwipeL"><i class="fas fa-arrow-left"></i></div>
-      <div class="gesture-label">PREV</div>
-    </div>
-    <div style="text-align:center;">
-      <div class="gesture-icon" id="gSwipeR"><i class="fas fa-arrow-right"></i></div>
-      <div class="gesture-label">NEXT</div>
-    </div>
-    <div style="text-align:center;">
-      <div class="gesture-icon" id="gPinch"><i class="fas fa-hand-point-up"></i></div>
-      <div class="gesture-label">SELECT</div>
-    </div>
-    <div style="text-align:center;">
-      <div class="gesture-icon" id="gThumbUp"><i class="fas fa-thumbs-up"></i></div>
-      <div class="gesture-label">PLAY</div>
-    </div>
-    <div style="text-align:center;">
-      <div class="gesture-icon" id="gThumbDn"><i class="fas fa-thumbs-down"></i></div>
-      <div class="gesture-label">PAUSE</div>
-    </div>
-  </div>
-
-</div>
-
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-
-/* ============================
-   Musical Constants
-   ============================ */
-const C3=130.81,D3=146.83,E3=164.81,F3=174.61,G3=196.00,A3=220.00,B3=246.94;
-const C4=261.63,D4=293.66,E4=329.63,F4=349.23,G4=392.00,A4=440.00,B4=493.88;
-const C5=523.25,D5=587.33,E5=659.25,F5=698.46,G5=783.99;
-
-/* ============================
-   Song Dataset
-   ============================ */
-const songs = [
-  {
-    title: "NEON DREAMS", artist: "CyberWave", album: "Digital Horizon",
-    duration: "3:42", bpm: 128, key: "#00ff88",
-    cover: "https://picsum.photos/seed/nexus1/300/300.jpg",
-    lead: [C4,0,E4,0,G4,0,C5,0, B4,0,G4,0,E4,0,0,0],
-    bass: [C3,0,0,C3,0,0,C3,0, G3,0,0,G3,0,0,G3,0]
-  },
-  {
-    title: "SYNTHWAVE RUSH", artist: "NeonPulse", album: "Midnight Drive",
-    duration: "4:15", bpm: 135, key: "#00ccff",
-    cover: "https://picsum.photos/seed/nexus2/300/300.jpg",
-    lead: [E4,0,G4,0,B4,0,E5,0, D5,0,B4,0,G4,0,0,0],
-    bass: [E3,0,0,E3,0,0,E3,0, D3,0,0,D3,0,0,D3,0]
-  },
-  {
-    title: "CHROME HEARTS", artist: "DataStream", album: "Binary Sunset",
-    duration: "3:58", bpm: 140, key: "#ff0055",
-    cover: "https://picsum.photos/seed/nexus3/300/300.jpg",
-    lead: [A3,0,C4,0,E4,0,A4,0, G4,0,E4,0,C4,0,0,0],
-    bass: [A2,0,0,A2,0,0,A2,0, G2,0,0,G2,0,0,G2,0]
-  },
-  {
-    title: "QUANTUM LEAP", artist: "ZeroGravity", album: "Event Horizon",
-    duration: "5:01", bpm: 145, key: "#ffaa00",
-    cover: "https://picsum.photos/seed/nexus4/300/300.jpg",
-    lead: [F4,0,A4,0,C5,0,F5,0, E5,0,C5,0,A4,0,0,0],
-    bass: [F3,0,0,F3,0,0,F3,0, E3,0,0,E3,0,0,E3,0]
-  },
-  {
-    title: "VOID WALKER", artist: "DarkMatter", album: "Singularity",
-    duration: "4:33", bpm: 120, key: "#cc44ff",
-    cover: "https://picsum.photos/seed/nexus5/300/300.jpg",
-    lead: [D4,0,F4,0,A4,0,D5,0, C5,0,A4,0,F4,0,0,0],
-    bass: [D3,0,0,D3,0,0,D3,0, C3,0,0,C3,0,0,C3,0]
-  }
-];
-
-/* ============================
-   State
-   ============================ */
-let currentIndex = 0;
-let isPlaying = false;
-let audioCtx = null;
-let analyser = null;
-let masterGain = null;
-let stepInterval = null;
-let currentStep = 0;
-let songProgress = 0;
-let systemActive = false;
-let handResults = null;
-
-/* ============================
-   Music Synth Engine
-   ============================ */
-function initAudio() {
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 128;
-  analyser.smoothingTimeConstant = 0.8;
-  masterGain = audioCtx.createGain();
-  masterGain.gain.value = 0.4;
-  masterGain.connect(analyser);
-  analyser.connect(audioCtx.destination);
-}
-
-function playNote(freq, duration, type = 'sawtooth', vol = 0.12) {
-  if (!audioCtx || freq <= 0) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
-  osc.type = type;
-  osc.frequency.value = freq;
-  filter.type = 'lowpass';
-  filter.frequency.value = 1800 + Math.random() * 600;
-  filter.Q.value = 2;
-  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(masterGain);
-  osc.start();
-  osc.stop(audioCtx.currentTime + duration);
-}
-
-function playKick() {
-  if (!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.12);
-  gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
-  osc.connect(gain);
-  gain.connect(masterGain);
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.2);
-}
-
-function playHihat() {
-  if (!audioCtx) return;
-  const bufferSize = audioCtx.sampleRate * 0.04;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
-  const src = audioCtx.createBufferSource();
-  src.buffer = buffer;
-  const gain = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
-  filter.type = 'highpass';
-  filter.frequency.value = 8000;
-  gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
-  src.connect(filter);
-  filter.connect(gain);
-  gain.connect(masterGain);
-  src.start();
-}
-
-function startPlaying() {
-  if (isPlaying) return;
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  isPlaying = true;
-  currentStep = 0;
-  const song = songs[currentIndex];
-  const stepMs = (60000 / song.bpm) / 4;
-
-  stepInterval = setInterval(() => {
-    const idx = currentStep % song.lead.length;
-    const leadFreq = song.lead[idx];
-    const bassFreq = song.bass[idx];
-    if (leadFreq > 0) playNote(leadFreq, stepMs * 2.5 / 1000, 'sawtooth', 0.1);
-    if (bassFreq > 0) playNote(bassFreq, stepMs * 3 / 1000, 'sine', 0.18);
-    // Kick on beat (every 4 steps)
-    if (currentStep % 4 === 0) playKick();
-    // Hihat on off-beats
-    if (currentStep % 4 === 2) playHihat();
-
-    songProgress = (currentStep % (song.lead.length * 4)) / (song.lead.length * 4);
-    currentStep++;
-  }, stepMs);
-
-  updateNowPlaying();
-}
-
-function stopPlaying() {
-  isPlaying = false;
-  if (stepInterval) { clearInterval(stepInterval); stepInterval = null; }
-}
-
-/* ============================
-   Hand Connection Map
-   ============================ */
-const HAND_CONNS = [
-  [0,1],[1,2],[2,3],[3,4],
-  [0,5],[5,6],[6,7],[7,8],
-  [5,9],[9,10],[10,11],[11,12],
-  [9,13],[13,14],[14,15],[15,16],
-  [13,17],[17,18],[18,19],[19,20],
-  [0,17]
-];
-const FINGERTIPS = [4,8,12,16,20];
-
-/* ============================
-   Gesture Detector
-   ============================ */
-class GestureDetector {
-  constructor() {
-    this.wristHistory = [];
-    this.maxHistory = 18;
-    this.cooldown = 0;
-    this.lastGesture = 'none';
-    this.pinchActive = false;
-    this.pinchCooldown = 0;
-  }
-
-  detect(landmarks) {
-    if (this.cooldown > 0) { this.cooldown--; return 'none'; }
-    if (!landmarks || landmarks.length < 21) return 'none';
-
-    // Thumbs up/down
-    const thumbUp = this.isThumbsUp(landmarks);
-    const thumbDown = this.isThumbsDown(landmarks);
-    if (thumbUp) { this.cooldown = 40; this.lastGesture = 'thumbs_up'; return 'thumbs_up'; }
-    if (thumbDown) { this.cooldown = 40; this.lastGesture = 'thumbs_down'; return 'thumbs_down'; }
-
-    // Pinch
-    const pinch = this.isPinching(landmarks);
-    if (pinch && !this.pinchActive) {
-      this.pinchActive = true;
-      this.cooldown = 25;
-      this.lastGesture = 'pinch';
-      return 'pinch';
+    /* ========================================
+       TYPING ANIMATION
+    ======================================== */
+    function typeText(element, text, speed = 80){
+        return new Promise(resolve => {
+            let i = 0;
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            element.appendChild(cursor);
+            function type(){
+                if(i < text.length){
+                    element.insertBefore(document.createTextNode(text[i]), cursor);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    setTimeout(()=>{
+                        cursor.remove();
+                        resolve();
+                    }, 500);
+                }
+            }
+            type();
+        });
     }
-    if (!pinch) this.pinchActive = false;
-
-    // Swipe
-    const swipe = this.detectSwipe(landmarks);
-    if (swipe !== 'none') {
-      this.cooldown = 35;
-      this.lastGesture = swipe;
-      return swipe;
+    async function startTyping(){
+        await typeText(document.getElementById('typing-1'), 'Untuk Silvia Tri Cahyani', 90);
+        await new Promise(r => setTimeout(r, 400));
+        await typeText(document.getElementById('typing-2'), 'Terima kasih telah hadir dan menjadi bagian dari cerita yang begitu berarti.', 50);
+        document.getElementById('open-btn').classList.add('show');
     }
 
-    return 'none';
-  }
-
-  isThumbsUp(lm) {
-    if (lm[4].y > lm[3].y) return false;
-    const tips = [8,12,16,20], pips = [6,10,14,18];
-    return tips.every((t,i) => lm[t].y > lm[pips[i]].y - 0.02);
-  }
-
-  isThumbsDown(lm) {
-    if (lm[4].y < lm[3].y + 0.03) return false;
-    const tips = [8,12,16,20], pips = [6,10,14,18];
-    return tips.every((t,i) => lm[t].y > lm[pips[i]].y - 0.02);
-  }
-
-  isPinching(lm) {
-    const dx = lm[4].x - lm[8].x, dy = lm[4].y - lm[8].y;
-    return Math.sqrt(dx*dx + dy*dy) < 0.055;
-  }
-
-  detectSwipe(lm) {
-    const wx = lm[0].x;
-    this.wristHistory.push(wx);
-    if (this.wristHistory.length > this.maxHistory) this.wristHistory.shift();
-    if (this.wristHistory.length < this.maxHistory) return 'none';
-
-    const first = this.wristHistory.slice(0, 6).reduce((a,b)=>a+b,0) / 6;
-    const last = this.wristHistory.slice(-6).reduce((a,b)=>a+b,0) / 6;
-    const delta = last - first;
-
-    if (delta > 0.12) { this.wristHistory = []; return 'swipe_left'; }
-    if (delta < -0.12) { this.wristHistory = []; return 'swipe_right'; }
-    return 'none';
-  }
-}
-
-const gestureDetector = new GestureDetector();
-
-/* ============================
-   Draw Neon Hand Skeleton
-   ============================ */
-function drawHandSkeleton(ctx, landmarks, w, h) {
-  if (!landmarks || landmarks.length < 21) return;
-
-  // Draw connections
-  for (const [a, b] of HAND_CONNS) {
-    const ax = landmarks[a].x * w, ay = landmarks[a].y * h;
-    const bx = landmarks[b].x * w, by = landmarks[b].y * h;
-    const isThumb = (a <= 4 && b <= 4);
-
-    ctx.save();
-    ctx.shadowBlur = isThumb ? 18 : 12;
-    ctx.shadowColor = isThumb ? '#00ccff' : '#00ff88';
-    ctx.strokeStyle = isThumb ? 'rgba(0,204,255,0.8)' : 'rgba(0,255,136,0.7)';
-    ctx.lineWidth = isThumb ? 3 : 2.5;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(ax, ay);
-    ctx.lineTo(bx, by);
-    ctx.stroke();
-    ctx.stroke(); // Double stroke for stronger glow
-    ctx.restore();
-  }
-
-  // Draw joints
-  for (let i = 0; i < 21; i++) {
-    const x = landmarks[i].x * w, y = landmarks[i].y * h;
-    const isTip = FINGERTIPS.includes(i);
-    const radius = isTip ? 6 : 3.5;
-    const color = isTip ? '#00ccff' : '#00ff88';
-
-    ctx.save();
-    ctx.shadowBlur = isTip ? 25 : 12;
-    ctx.shadowColor = color;
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x, y, Math.max(1, radius), 0, Math.PI * 2);
-    ctx.fill();
-
-    // Inner white core
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    ctx.beginPath();
-    ctx.arc(x, y, Math.max(0.5, radius * 0.35), 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  // Draw energy lines from fingertips
-  for (const tip of FINGERTIPS) {
-    const x = landmarks[tip].x * w, y = landmarks[tip].y * h;
-    ctx.save();
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = '#00ccff';
-    ctx.strokeStyle = 'rgba(0,204,255,0.25)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 8]);
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + (Math.random() - 0.5) * 60, y - 40 - Math.random() * 30);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.restore();
-  }
-}
-
-/* ============================
-   Three.js Scene
-   ============================ */
-const threeCanvas = document.getElementById('threeCanvas');
-const scene = new THREE.Scene();
-const cam3d = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-cam3d.position.z = 6;
-
-const renderer = new THREE.WebGLRenderer({ canvas: threeCanvas, alpha: true, antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-// Particles
-const pCount = 700;
-const pGeo = new THREE.BufferGeometry();
-const pPos = new Float32Array(pCount * 3);
-const pVel = new Float32Array(pCount * 3); // Store velocity for animation
-for (let i = 0; i < pCount; i++) {
-  pPos[i*3]   = (Math.random() - 0.5) * 18;
-  pPos[i*3+1] = (Math.random() - 0.5) * 12;
-  pPos[i*3+2] = (Math.random() - 0.5) * 12 - 2;
-  pVel[i*3]   = (Math.random() - 0.5) * 0.003;
-  pVel[i*3+1] = (Math.random() - 0.5) * 0.003;
-  pVel[i*3+2] = (Math.random() - 0.5) * 0.002;
-}
-pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-
-const pMat = new THREE.PointsMaterial({
-  color: 0x00ff88, size: 0.04, transparent: true, opacity: 0.5,
-  blending: THREE.AdditiveBlending, sizeAttenuation: true
-});
-const particles = new THREE.Points(pGeo, pMat);
-scene.add(particles);
-
-// Wireframe icosahedron
-const icoGeo = new THREE.IcosahedronGeometry(1.8, 1);
-const icoMat = new THREE.MeshBasicMaterial({
-  color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.08
-});
-const ico = new THREE.Mesh(icoGeo, icoMat);
-scene.add(ico);
-
-// Second wireframe (octahedron, inner)
-const octGeo = new THREE.OctahedronGeometry(1.0, 0);
-const octMat = new THREE.MeshBasicMaterial({
-  color: 0x00ccff, wireframe: true, transparent: true, opacity: 0.06
-});
-const oct = new THREE.Mesh(octGeo, octMat);
-scene.add(oct);
-
-// Ring geometry (HUD ring)
-const ringGeo = new THREE.TorusGeometry(2.8, 0.008, 8, 128);
-const ringMat = new THREE.MeshBasicMaterial({
-  color: 0x00ff88, transparent: true, opacity: 0.15
-});
-const ring = new THREE.Mesh(ringGeo, ringMat);
-ring.rotation.x = Math.PI / 2;
-scene.add(ring);
-
-// Audio reactive data
-let audioLevel = 0;
-let smoothAudioLevel = 0;
-
-/* ============================
-   Build Music Cards
-   ============================ */
-const carousel = document.getElementById('cardCarousel');
-const cardElements = [];
-
-songs.forEach((song, i) => {
-  const card = document.createElement('div');
-  card.className = 'music-card';
-  card.innerHTML = `
-    <div class="hud-corner hud-corner--tl"></div>
-    <div class="hud-corner hud-corner--tr"></div>
-    <div class="hud-corner hud-corner--bl"></div>
-    <div class="hud-corner hud-corner--br"></div>
-    <img class="cover" src="${song.cover}" alt="${song.title}" loading="lazy">
-    <div class="title">${song.title}</div>
-    <div class="artist">${song.artist} // ${song.album}</div>
-    <div class="meta">
-      <span class="bpm-tag">${song.bpm} BPM</span>
-      <span class="dur"><i class="far fa-clock" style="margin-right:4px;"></i>${song.duration}</span>
-    </div>
-    <div id="progressBar"><div id="progressFill"></div></div>
-  `;
-  card.style.transformOrigin = 'center center';
-  carousel.appendChild(card);
-  cardElements.push(card);
-});
-
-function updateCards(animate = true) {
-  cardElements.forEach((card, i) => {
-    const offset = i - currentIndex;
-    const absOff = Math.abs(offset);
-    const x = offset * 300;
-    const rz = offset * -8;
-    const ry = offset * -12;
-    const s = Math.max(0.5, 1 - absOff * 0.18);
-    const op = Math.max(0, 1 - absOff * 0.35);
-    const zIdx = 10 - absOff;
-
-    card.style.zIndex = zIdx;
-    card.classList.toggle('active', offset === 0);
-
-    if (animate) {
-      gsap.to(card, { x, rotateZ: rz, rotateY: ry, scale: s, opacity: op, duration: 0.55, ease: 'power2.out' });
-    } else {
-      gsap.set(card, { x, rotateZ: rz, rotateY: ry, scale: s, opacity: op });
-    }
-  });
-}
-updateCards(false);
-
-/* ============================
-   Build Visualizer Bars
-   ============================ */
-const vizBarsEl = document.getElementById('vizBars');
-const vizBarCount = 48;
-const vizBarEls = [];
-for (let i = 0; i < vizBarCount; i++) {
-  const bar = document.createElement('div');
-  bar.className = 'viz-bar';
-  bar.style.height = '2px';
-  vizBarsEl.appendChild(bar);
-  vizBarEls.push(bar);
-}
-
-// Mini visualizer in now-playing section
-const vizMini = document.getElementById('vizContainer');
-const vizMiniEls = [];
-for (let i = 0; i < 16; i++) {
-  const bar = document.createElement('div');
-  bar.style.width = '2px';
-  bar.style.height = '2px';
-  bar.style.background = 'var(--neon)';
-  bar.style.borderRadius = '1px';
-  bar.style.minHeight = '1px';
-  bar.style.boxShadow = '0 0 4px rgba(0,255,136,0.5)';
-  vizMini.appendChild(bar);
-  vizMiniEls.push(bar);
-}
-
-/* ============================
-   Update Now Playing Info
-   ============================ */
-function updateNowPlaying() {
-  const song = songs[currentIndex];
-  document.getElementById('npTitle').textContent = song.title;
-  document.getElementById('npArtist').textContent = song.artist;
-
-  // Update accent color on active card border
-  document.documentElement.style.setProperty('--neon', song.key);
-}
-
-/* ============================
-   Show Gesture Notification
-   ============================ */
-function showGestureNotify(text) {
-  const el = document.getElementById('gestureNotify');
-  el.textContent = text;
-  gsap.killTweensOf(el);
-  gsap.fromTo(el,
-    { opacity: 0, scale: 1.5, y: -10 },
-    { opacity: 1, scale: 1, y: 0, duration: 0.2, ease: 'power2.out',
-      onComplete: () => {
-        gsap.to(el, { opacity: 0, y: -15, duration: 0.6, delay: 0.4, ease: 'power2.in' });
-      }
-    }
-  );
-}
-
-function flashGestureIcon(id) {
-  const el = document.getElementById(id);
-  el.classList.add('active');
-  setTimeout(() => el.classList.remove('active'), 600);
-}
-
-/* ============================
-   Handle Gesture
-   ============================ */
-function handleGesture(gesture) {
-  switch(gesture) {
-    case 'swipe_left':
-      currentIndex = (currentIndex - 1 + songs.length) % songs.length;
-      updateCards(true);
-      if (isPlaying) { stopPlaying(); startPlaying(); }
-      updateNowPlaying();
-      showGestureNotify('PREV');
-      flashGestureIcon('gSwipeL');
-      break;
-    case 'swipe_right':
-      currentIndex = (currentIndex + 1) % songs.length;
-      updateCards(true);
-      if (isPlaying) { stopPlaying(); startPlaying(); }
-      updateNowPlaying();
-      showGestureNotify('NEXT');
-      flashGestureIcon('gSwipeR');
-      break;
-    case 'pinch':
-      if (!isPlaying) {
-        startPlaying();
-        showGestureNotify('PLAY');
-      } else {
-        showGestureNotify('SELECT');
-      }
-      flashGestureIcon('gPinch');
-      break;
-    case 'thumbs_up':
-      if (!isPlaying) {
-        startPlaying();
-        showGestureNotify('PLAY');
-      }
-      flashGestureIcon('gThumbUp');
-      break;
-    case 'thumbs_down':
-      if (isPlaying) {
-        stopPlaying();
-        showGestureNotify('PAUSE');
-      }
-      flashGestureIcon('gThumbDn');
-      break;
-  }
-}
-
-/* ============================
-   Hand Tracking Canvas
-   ============================ */
-const handCanvas = document.getElementById('handCanvas');
-const hCtx = handCanvas.getContext('2d');
-
-function resizeHandCanvas() {
-  handCanvas.width = window.innerWidth;
-  handCanvas.height = window.innerHeight;
-}
-resizeHandCanvas();
-
-function onHandResults(results) {
-  handResults = results;
-}
-
-/* ============================
-   FPS Counter
-   ============================ */
-let frameCount = 0, lastFpsTime = performance.now(), fps = 0;
-function updateFps() {
-  frameCount++;
-  const now = performance.now();
-  if (now - lastFpsTime >= 1000) {
-    fps = frameCount;
-    frameCount = 0;
-    lastFpsTime = now;
-    document.getElementById('fpsDisplay').textContent = fps;
-  }
-}
-
-/* ============================
-   Main Render Loop
-   ============================ */
-const clock = new THREE.Clock();
-
-function animate() {
-  requestAnimationFrame(animate);
-  updateFps();
-  const t = clock.getElapsedTime();
-  const dt = clock.getDelta();
-
-  // Three.js animations
-  ico.rotation.x = t * 0.15;
-  ico.rotation.y = t * 0.2;
-  oct.rotation.x = -t * 0.25;
-  oct.rotation.z = t * 0.18;
-  ring.rotation.z = t * 0.08;
-
-  // Audio reactivity
-  if (analyser && isPlaying) {
-    const dataArr = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(dataArr);
-    let sum = 0;
-    for (let i = 0; i < dataArr.length; i++) sum += dataArr[i];
-    audioLevel = sum / dataArr.length / 255;
-
-    // Update visualizer bars
-    for (let i = 0; i < vizBarCount; i++) {
-      const di = Math.floor(i * dataArr.length / vizBarCount);
-      const val = dataArr[di] / 255;
-      vizBarEls[i].style.height = Math.max(2, val * 40) + 'px';
-      vizBarEls[i].style.opacity = 0.3 + val * 0.7;
-    }
-    for (let i = 0; i < 16; i++) {
-      const di = Math.floor(i * dataArr.length / 16);
-      const val = dataArr[di] / 255;
-      vizMiniEls[i].style.height = Math.max(1, val * 20) + 'px';
-    }
-  } else {
-    audioLevel *= 0.95;
-    for (const bar of vizBarEls) { bar.style.height = '2px'; bar.style.opacity = '0.3'; }
-    for (const bar of vizMiniEls) { bar.style.height = '1px'; }
-  }
-
-  smoothAudioLevel += (audioLevel - smoothAudioLevel) * 0.15;
-
-  // Audio-reactive icosahedron scale
-  const icoScale = 1 + smoothAudioLevel * 0.6;
-  ico.scale.setScalar(icoScale);
-  icoMat.opacity = 0.06 + smoothAudioLevel * 0.12;
-
-  const octScale = 1 + smoothAudioLevel * 0.4;
-  oct.scale.setScalar(octScale);
-
-  // Particle drift
-  const positions = pGeo.attributes.position.array;
-  const speed = isPlaying ? (1 + smoothAudioLevel * 3) : 0.5;
-  for (let i = 0; i < pCount; i++) {
-    positions[i*3]   += pVel[i*3] * speed;
-    positions[i*3+1] += pVel[i*3+1] * speed;
-    positions[i*3+2] += pVel[i*3+2] * speed;
-    // Wrap around
-    if (positions[i*3] > 9) positions[i*3] = -9;
-    if (positions[i*3] < -9) positions[i*3] = 9;
-    if (positions[i*3+1] > 6) positions[i*3+1] = -6;
-    if (positions[i*3+1] < -6) positions[i*3+1] = 6;
-  }
-  pGeo.attributes.position.needsUpdate = true;
-  pMat.opacity = 0.3 + smoothAudioLevel * 0.5;
-  pMat.size = 0.03 + smoothAudioLevel * 0.06;
-
-  // HUD progress arc
-  const circumference = 2 * Math.PI * 210;
-  const progressArc = document.getElementById('progressArc');
-  if (isPlaying) {
-    const dashLen = songProgress * circumference;
-    progressArc.setAttribute('stroke-dasharray', `${dashLen} ${circumference}`);
-    progressArc.setAttribute('stroke', songs[currentIndex].key);
-  } else {
-    progressArc.setAttribute('stroke-dasharray', `0 ${circumference}`);
-  }
-
-  // Update progress fill on active card
-  const activeCard = cardElements[currentIndex];
-  if (activeCard) {
-    const fill = activeCard.querySelector('#progressFill');
-    if (fill) fill.style.width = (songProgress * 100) + '%';
-  }
-
-  renderer.render(scene, cam3d);
-
-  // Draw hand skeleton on 2D canvas
-  hCtx.clearRect(0, 0, handCanvas.width, handCanvas.height);
-  if (handResults && handResults.multiHandLandmarks) {
-    const numHands = handResults.multiHandLandmarks.length;
-    document.getElementById('handCount').textContent = numHands;
-
-    for (const landmarks of handResults.multiHandLandmarks) {
-      drawHandSkeleton(hCtx, landmarks, handCanvas.width, handCanvas.height);
-
-      // Detect gestures
-      const gesture = gestureDetector.detect(landmarks);
-      if (gesture !== 'none') handleGesture(gesture);
+    /* ========================================
+       CONFETTI
+    ======================================== */
+    function burstConfetti(count = 80){
+        const colors = ['#EC407A','#F48FB1','#F8BBD0','#C9A96E','#D4B896','#fff','#E91E63','#FFD700'];
+        for(let i = 0; i < count; i++){
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = (Math.random() * 100) + 'vw';
+            piece.style.top = '-10px';
+            piece.style.width = (Math.random() * 10 + 5) + 'px';
+            piece.style.height = (Math.random() * 10 + 5) + 'px';
+            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            piece.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            piece.style.animationDelay = (Math.random() * 0.5) + 's';
+            document.body.appendChild(piece);
+            setTimeout(()=> piece.remove(), 6000);
+        }
     }
 
-    // Draw pinch indicator
-    if (handResults.multiHandLandmarks.length > 0) {
-      const lm = handResults.multiHandLandmarks[0];
-      const thumbTip = lm[4], indexTip = lm[8];
-      const dx = thumbTip.x - indexTip.x, dy = thumbTip.y - indexTip.y;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-
-      if (dist < 0.1) {
-        const cx = (thumbTip.x + indexTip.x) / 2 * handCanvas.width;
-        const cy = (thumbTip.y + indexTip.y) / 2 * handCanvas.height;
-        const radius = Math.max(5, (0.1 - dist) * 500);
-
-        hCtx.save();
-        hCtx.shadowBlur = 20;
-        hCtx.shadowColor = '#00ccff';
-        hCtx.strokeStyle = `rgba(0,204,255,${0.3 + (0.1 - dist) * 8})`;
-        hCtx.lineWidth = 2;
-        hCtx.beginPath();
-        hCtx.arc(cx, cy, radius, 0, Math.PI * 2);
-        hCtx.stroke();
-        hCtx.restore();
-      }
+    /* ========================================
+       GIFT OPENING
+    ======================================== */
+    let giftOpened = false;
+    function openGift(){
+        if(giftOpened) return;
+        giftOpened = true;
+        burstConfetti(100);
+        document.getElementById('gift').scrollIntoView({ behavior: 'smooth' });
+        setTimeout(()=>{
+            document.getElementById('gift-box').classList.add('opened');
+            setTimeout(()=>{
+                document.getElementById('photo-reveal').classList.add('show');
+                document.getElementById('gift-text').classList.add('show');
+            }, 600);
+        }, 800);
     }
-  } else {
-    document.getElementById('handCount').textContent = '0';
-  }
-}
 
-animate();
+    /* ========================================
+       SCROLL REVEAL (Intersection Observer)
+    ======================================== */
+    const revealObserver = new IntersectionObserver((entries)=>{
+        entries.forEach(entry => {
+            if(entry.isIntersecting){
+                entry.target.classList.add('revealed');
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-/* ============================
-   Window Resize
-   ============================ */
-window.addEventListener('resize', () => {
-  cam3d.aspect = window.innerWidth / window.innerHeight;
-  cam3d.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  resizeHandCanvas();
-});
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-/* ============================
-   Boot Sequence & Init
-   ============================ */
-const startOverlay = document.getElementById('startOverlay');
-const bootTerminal = document.getElementById('bootTerminal');
-
-const bootLines = [
-  { text: '> INITIALIZING NEXUS AR MUSIC SYSTEM...', delay: 0 },
-  { text: '> CAMERA MODULE.............. ', status: 'ok', delay: 400 },
-  { text: '> HAND TRACKING ENGINE....... ', status: 'ok', delay: 800 },
-  { text: '> NEURAL GESTURE PROCESSOR... ', status: 'ok', delay: 1200 },
-  { text: '> AUDIO SYNTHESIZER......... ', status: 'ok', delay: 1600 },
-  { text: '> 3D RENDERING PIPELINE...... ', status: 'ok', delay: 2000 },
-  { text: '> HOLOGRAPHIC UI............. ', status: 'ok', delay: 2400 },
-  { text: '', delay: 2900 },
-  { text: '> SYSTEM READY', status: 'ready', delay: 3000 },
-];
-
-async function runBoot() {
-  startOverlay.style.opacity = '0';
-  startOverlay.style.pointerEvents = 'none';
-  await new Promise(r => setTimeout(r, 500));
-  startOverlay.style.display = 'none';
-
-  bootTerminal.style.display = 'flex';
-  for (const line of bootLines) {
-    await new Promise(r => setTimeout(r, line.delay === 0 ? 100 : 350));
-    const div = document.createElement('div');
-    div.className = 'line';
-    if (line.status === 'ok') {
-      div.innerHTML = `${line.text}<span class="ok">[OK]</span>`;
-    } else if (line.status === 'ready') {
-      div.innerHTML = `<span class="ok" style="font-weight:bold;">${line.text}</span>`;
-    } else {
-      div.textContent = line.text;
+    /* ========================================
+       LIGHTBOX
+    ======================================== */
+    function openLightbox(item){
+        const img = item.querySelector('img');
+        document.getElementById('lightbox-img').src = img.src;
+        document.getElementById('lightbox').classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
-    bootTerminal.appendChild(div);
-    gsap.to(div, { opacity: 1, duration: 0.15 });
-  }
-
-  await new Promise(r => setTimeout(r, 800));
-  gsap.to(bootTerminal, {
-    opacity: 0, duration: 0.5,
-    onComplete: () => {
-      bootTerminal.style.display = 'none';
-      activateSystem();
+    function closeLightbox(){
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
     }
-  });
-}
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
 
-async function activateSystem() {
-  systemActive = true;
+    /* ========================================
+       COUNTDOWN
+    ======================================== */
+    function updateCountdown(){
+        const now = new Date();
+        let target = new Date(BIRTHDAY_DATE);
+        /* Jika tanggal sudah lewat tahun ini, gunakan tahun depan */
+        if(now > target){
+            target = new Date(BIRTHDAY_DATE);
+            target.setFullYear(now.getFullYear());
+            if(now > target) target.setFullYear(now.getFullYear() + 1);
+        }
+        const diff = target - now;
+        if(diff <= 0){
+            document.getElementById('cd-days').textContent = '🎉';
+            document.getElementById('cd-hours').textContent = '🥳';
+            document.getElementById('cd-mins').textContent = '🎂';
+            document.getElementById('cd-secs').textContent = '🎈';
+            return;
+        }
+        const d = Math.floor(diff / (1000*60*60*24));
+        const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+        const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+        const s = Math.floor((diff % (1000*60)) / 1000);
+        document.getElementById('cd-days').textContent = String(d).padStart(2,'0');
+        document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+        document.getElementById('cd-mins').textContent = String(m).padStart(2,'0');
+        document.getElementById('cd-secs').textContent = String(s).padStart(2,'0');
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
 
-  // Init audio
-  initAudio();
+    /* ========================================
+       MUSIC PLAYER
+    ======================================== */
+    /* Ganti URL di bawah dengan file musik romantis Anda */
+    const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
+    audio.loop = true;
+    audio.volume = 0.5;
+    audio.preload = 'auto';
+    let isPlaying = false;
 
-  // Init MediaPipe Hands
-  try {
-    const hands = new Hands({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-    });
-    hands.setOptions({
-      maxNumHands: 2,
-      modelComplexity: 1,
-      minDetectionConfidence: 0.65,
-      minTrackingConfidence: 0.5
-    });
-    hands.onResults(onHandResults);
+    function toggleMusic(){
+        if(isPlaying){
+            audio.pause();
+            document.getElementById('music-icon').className = 'fas fa-play';
+        } else {
+            audio.play().catch(()=>{});
+            document.getElementById('music-icon').className = 'fas fa-pause';
+        }
+        isPlaying = !isPlaying;
+    }
+    function changeVolume(val){
+        audio.volume = val / 100;
+    }
 
-    const videoEl = document.getElementById('webcam');
-    const mpCamera = new Camera(videoEl, {
-      onFrame: async () => {
-        await hands.send({ image: videoEl });
-      },
-      width: 1280,
-      height: 720
-    });
-    await mpCamera.start();
-  } catch(e) {
-    console.warn('Camera/MediaPipe error:', e);
-    // Show fallback message
-    const errMsg = document.createElement('div');
-    errMsg.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);z-index:50;padding:12px 24px;border:1px solid rgba(255,0,85,0.4);background:rgba(255,0,85,0.08);color:#ff0055;font-size:0.75rem;border-radius:8px;text-align:center;letter-spacing:0.1em;';
-    errMsg.textContent = 'CAMERA UNAVAILABLE — USE GESTURE GUIDE ICONS TO CONTROL';
-    document.body.appendChild(errMsg);
-  }
+    /* ========================================
+       ENDING STARS
+    ======================================== */
+    (function initStars(){
+        const container = document.getElementById('stars-container');
+        for(let i = 0; i < 80; i++){
+            const star = document.createElement('div');
+            star.className = 'ending-star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.width = (Math.random() * 3 + 1) + 'px';
+            star.style.height = star.style.width;
+            container.appendChild(star);
+        }
+    })();
 
-  // Update status
-  document.getElementById('statusDot').classList.remove('inactive');
-  document.getElementById('statusText').textContent = 'ACTIVE';
-  document.getElementById('statusText').style.color = 'var(--neon)';
+    /* ========================================
+       FINAL BURST (tombol ending)
+    ======================================== */
+    function finalBurst(){
+        burstConfetti(120);
+        /* Scroll ke atas dengan efek */
+        setTimeout(()=>{
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1500);
+    }
 
-  // Animate UI elements in
-  gsap.to('#nowPlaying', { opacity: 1, y: 0, duration: 0.6, delay: 0.2, ease: 'power2.out' });
-  gsap.fromTo('#hudArcs', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.8, delay: 0.1, ease: 'power2.out' });
+    /* ========================================
+       FOOTER YEAR
+    ======================================== */
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
 
-  // Entrance animation for cards
-  cardElements.forEach((card, i) => {
-    gsap.fromTo(card, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.3 + i * 0.08, ease: 'power2.out' });
-  });
-
-  updateNowPlaying();
-}
-
-/* ============================
-   Start on Click / Keyboard
-   ============================ */
-function startSystem() {
-  if (startOverlay.style.display === 'none') return;
-  runBoot();
-}
-
-startOverlay.addEventListener('click', startSystem);
-startOverlay.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' || e.key === ' ') startSystem();
-});
-
-/* ============================
-   Fallback: Click Gesture Icons
-   (When camera is not available)
-   ============================ */
-document.getElementById('gSwipeL').style.pointerEvents = 'auto';
-document.getElementById('gSwipeR').style.pointerEvents = 'auto';
-document.getElementById('gPinch').style.pointerEvents = 'auto';
-document.getElementById('gThumbUp').style.pointerEvents = 'auto';
-document.getElementById('gThumbDn').style.pointerEvents = 'auto';
-document.getElementById('gSwipeL').style.cursor = 'pointer';
-document.getElementById('gSwipeR').style.cursor = 'pointer';
-document.getElementById('gPinch').style.cursor = 'pointer';
-document.getElementById('gThumbUp').style.cursor = 'pointer';
-document.getElementById('gThumbDn').style.cursor = 'pointer';
-
-document.getElementById('gSwipeL').addEventListener('click', () => handleGesture('swipe_left'));
-document.getElementById('gSwipeR').addEventListener('click', () => handleGesture('swipe_right'));
-document.getElementById('gPinch').addEventListener('click', () => handleGesture('pinch'));
-document.getElementById('gThumbUp').addEventListener('click', () => handleGesture('thumbs_up'));
-document.getElementById('gThumbDn').addEventListener('click', () => handleGesture('thumbs_down'));
-
-/* ============================
-   Keyboard fallback controls
-   ============================ */
-window.addEventListener('keydown', (e) => {
-  if (!systemActive) return;
-  switch(e.key) {
-    case 'ArrowLeft': handleGesture('swipe_left'); break;
-    case 'ArrowRight': handleGesture('swipe_right'); break;
-    case ' ': e.preventDefault(); handleGesture(isPlaying ? 'thumbs_down' : 'thumbs_up'); break;
-    case 'Enter': handleGesture('pinch'); break;
-  }
-});
-
-</script>
+    /* ========================================
+       CONFETTI AWAL (setelah loading)
+    ======================================== */
+    setTimeout(()=> burstConfetti(50), 3500);
+    </script>
 </body>
 </html>
